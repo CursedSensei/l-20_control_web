@@ -1,0 +1,26 @@
+{
+    "connection": {
+        "url": "ws://air1.local:5885"
+    },
+    "tracks": {
+        "mono": {
+            "count": 16
+        },
+        "stereo": {
+            "count": 2
+        },
+        "fx": {
+            "count": 2
+        }
+    },
+    "groups": {
+        "count": 7,
+        "names": ["M", "A", "B", "C", "D", "E", "F"],
+        "startup": 0
+    },
+    "users": [
+        {"name": "Main", "icon": "", "restrictions": []},
+        {"name": "Bass", "icon": "bass.png", "restrictions": [], "groups": ["B"]}
+    ]
+    
+}

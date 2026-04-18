@@ -1,0 +1,583 @@
+{
+    "command": {
+        "function": "track-info",
+        "tracks": [
+            {
+                "number": 0,
+                "name": "WLeader",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    91,
+                    77,
+                    43,
+                    27,
+                    29,
+                    36,
+                    66
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 34,
+                    "eq_mid_frq": 34,
+                    "eq_mid": 20,
+                    "eq_low": 29,
+                    "eq_lowcut": 44,
+                    "efx1": 27,
+                    "efx2": 18
+                },
+                "rec": 0
+            },
+            {
+                "number": 1,
+                "name": "Backup1",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    79,
+                    67,
+                    29,
+                    30,
+                    21,
+                    0,
+                    68
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 21,
+                    "eq_mid_frq": 60,
+                    "eq_mid": 22,
+                    "eq_low": 35,
+                    "eq_lowcut": 44,
+                    "efx1": 26,
+                    "efx2": 17
+                },
+                "rec": 0
+            },
+            {
+                "number": 2,
+                "name": "Backup2",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    69,
+                    50,
+                    26,
+                    26,
+                    20,
+                    18,
+                    45
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 23,
+                    "eq_mid_frq": 64,
+                    "eq_mid": 20,
+                    "eq_low": 24,
+                    "eq_lowcut": 48,
+                    "efx1": 26,
+                    "efx2": 17
+                },
+                "rec": 0
+            },
+            {
+                "number": 3,
+                "name": "Backup3",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    85,
+                    70,
+                    31,
+                    29,
+                    24,
+                    19,
+                    49
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 26,
+                    "eq_mid_frq": 61,
+                    "eq_mid": 25,
+                    "eq_low": 26,
+                    "eq_lowcut": 41,
+                    "efx1": 26,
+                    "efx2": 23
+                },
+                "rec": 0
+            },
+            {
+                "number": 4,
+                "name": "Keyboard",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    51,
+                    41,
+                    116,
+                    48,
+                    40,
+                    26,
+                    50
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 31,
+                    "eq_mid_frq": 33,
+                    "eq_mid": 29,
+                    "eq_low": 25,
+                    "eq_lowcut": 21,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 5,
+                "name": "Acoustic",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    75,
+                    55,
+                    25,
+                    96,
+                    22,
+                    30,
+                    45
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 20,
+                    "eq_mid_frq": 58,
+                    "eq_mid": 27,
+                    "eq_low": 26,
+                    "eq_lowcut": 38,
+                    "efx1": 22,
+                    "efx2": 24
+                },
+                "rec": 0
+            },
+            {
+                "number": 6,
+                "name": "LeadGtr",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    77,
+                    62,
+                    0,
+                    29,
+                    47,
+                    26,
+                    51
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 36,
+                    "eq_off": 0,
+                    "eq_high": 33,
+                    "eq_mid_frq": 58,
+                    "eq_mid": 40,
+                    "eq_low": 35,
+                    "eq_lowcut": 18,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 7,
+                "name": "BassGtr",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    0,
+                    0,
+                    38,
+                    37,
+                    21,
+                    66,
+                    38
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 34,
+                    "eq_mid_frq": 42,
+                    "eq_mid": 21,
+                    "eq_low": 18,
+                    "eq_lowcut": 32,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 8,
+                "name": "BassDrum",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    0,
+                    0,
+                    45,
+                    0,
+                    24,
+                    51,
+                    82
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 44,
+                    "eq_mid_frq": 9,
+                    "eq_mid": 17,
+                    "eq_low": 19,
+                    "eq_lowcut": 29,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 9,
+                "name": "Snare",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    80,
+                    69,
+                    45,
+                    0,
+                    28,
+                    31,
+                    64
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 43,
+                    "eq_mid_frq": 20,
+                    "eq_mid": 16,
+                    "eq_low": 23,
+                    "eq_lowcut": 20,
+                    "efx1": 23,
+                    "efx2": 8
+                },
+                "rec": 0
+            },
+            {
+                "number": 10,
+                "name": "Tom1",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    66,
+                    70,
+                    0,
+                    0,
+                    0,
+                    29,
+                    31
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 38,
+                    "eq_off": 0,
+                    "eq_high": 35,
+                    "eq_mid_frq": 37,
+                    "eq_mid": 20,
+                    "eq_low": 19,
+                    "eq_lowcut": 25,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 11,
+                "name": "Tom2",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    0,
+                    0,
+                    92,
+                    66,
+                    67,
+                    76,
+                    0
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 30,
+                    "eq_mid_frq": 48,
+                    "eq_mid": 30,
+                    "eq_low": 35,
+                    "eq_lowcut": 0,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 12,
+                "name": "FlrTom",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    50,
+                    48,
+                    0,
+                    0,
+                    47,
+                    37,
+                    77
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 72,
+                    "eq_off": 0,
+                    "eq_high": 38,
+                    "eq_mid_frq": 19,
+                    "eq_mid": 17,
+                    "eq_low": 20,
+                    "eq_lowcut": 30,
+                    "efx1": 18,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 13,
+                "name": "Ch14",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    0,
+                    0,
+                    48,
+                    52,
+                    59,
+                    39,
+                    92
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 18,
+                    "eq_mid_frq": 38,
+                    "eq_mid": 32,
+                    "eq_low": 22,
+                    "eq_lowcut": 49,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 14,
+                "name": "Backup3",
+                "color": 0,
+                "mute": 1,
+                "solo": 0,
+                "values": [
+                    88,
+                    76,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 22,
+                    "eq_mid_frq": 59,
+                    "eq_mid": 20,
+                    "eq_low": 26,
+                    "eq_lowcut": 45,
+                    "efx1": 25,
+                    "efx2": 18
+                },
+                "rec": 0
+            },
+            {
+                "number": 15,
+                "name": "Pastor",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 29,
+                    "eq_mid_frq": 62,
+                    "eq_mid": 26,
+                    "eq_low": 33,
+                    "eq_lowcut": 47,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 16,
+                "name": "CH17_18",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    94,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 30,
+                    "eq_mid_frq": 62,
+                    "eq_mid": 30,
+                    "eq_low": 30,
+                    "eq_lowcut": 0,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 17,
+                "name": "CH19_20",
+                "color": 0,
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    0,
+                    97,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "eq": {
+                    "phase": 0,
+                    "pan": 50,
+                    "eq_off": 0,
+                    "eq_high": 31,
+                    "eq_mid_frq": 48,
+                    "eq_mid": 30,
+                    "eq_low": 30,
+                    "eq_lowcut": 0,
+                    "efx1": 0,
+                    "efx2": 0
+                },
+                "rec": 0
+            },
+            {
+                "number": 18,
+                "name": "FX1",
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    78,
+                    83,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            {
+                "number": 19,
+                "name": "FX2",
+                "mute": 0,
+                "solo": 0,
+                "values": [
+                    53,
+                    50,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ],
+        "master": {
+            "value": 43,
+            "mute": 0
+        },
+        "monitor": [
+            54,
+            60,
+            110,
+            88,
+            111,
+            48
+        ],
+        "effects": [
+            {
+                "effect": 3,
+                "param1": 58,
+                "param2": 0
+            },
+            {
+                "effect": 3,
+                "param1": 124,
+                "param2": 50
+            }
+        ]
+    }
+}

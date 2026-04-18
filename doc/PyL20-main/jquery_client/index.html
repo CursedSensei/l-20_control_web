@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>PyL20 Mixer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
+
+    <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/tracks.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/menu.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/fancyknob.css">
+	<script src="assets/js/jquery-3.7.0.js"></script>
+    <script src="assets/js/jquery.svg.js"></script>
+    <script src="assets/js/jquery.knob.js"></script>
+  </head>
+  <body>
+    
+	<div id="error_message" class="alert alert-danger" role="alert" style="display:none;"></div>
+	<div id="ok_message" class="alert alert-success" role="alert" style="display:none;"></div>
+    <div id="debug" class="modal" style="display:none;"><div class="close">X</div><div class="info"></div><div class="value"></div></div>
+    <div id="colorpicker" class="modal" style="display:none;"><div class="close">X</div>
+        <ul>
+            <li class="color0" x-value="0"></li>
+            <li class="color1" x-value="1"></li>
+            <li class="color2" x-value="2"></li>
+            <li class="color3" x-value="3"></li>
+            <li class="color4" x-value="4"></li>
+            <li class="color5" x-value="5"></li>
+            <li class="color6" x-value="6"></li>
+            <li class="color7" x-value="7"></li>
+        </ul>
+    </div>
+
+    <div id="topbar">
+        <div id="connection"></div>
+    </div>
+    <div id="menu">
+        <ul>
+            <li class="connection"></li>
+            <li class="settings"></li>
+            <li class="channel"></li>
+            <li class="effect"></li>
+        </ul>
+    </div>
+    <div id="settings" class="top overlay" style="display:none;">
+
+    </div>
+    <div id="channel_settings" class="top overlay" style="display:none;"></div>
+    <div id="effect_settings" class="top overlay" style="display:none;">
+        <div class="fx1"></div>
+        <div class="fx2"></div>
+    </div>
+	
+    <div id="mixer">
+        <div id="track_container"></div>
+
+        <div id="main">
+            <div class="status"></div>
+            <div class="monitor"></div>
+            <div class="groups"></div>
+            <div class="scenes"></div>
+            <div class="master track">
+                <button class="button rec" title="REC/PLAY">REC/PLAY</button>
+                <button class="button mute" title="Mute track">MUTE</button>
+                <button class="button solo" title="Solo">SOLO</button>
+                <div class="meter_slide">
+                    <div class="value"></div>
+                    <input type="range" orient="vertical" class="slider volume" max="120" />
+                    <div class="meter"></div>
+                </div>
+                <div class="name">MASTER</div>
+            </div>
+        </div>
+    </div>
+
+    <template id="group_tpl">
+        <button class="group button"></button>
+    </template>
+
+	<template id="track_tpl">
+        <div class="track">
+		    <div class="sig"></div>
+            <div class="eq controls"></div>
+            <div class="controls efx1"></div>
+            <div class="controls efx2"></div>
+			<div class="controls pan"></div>
+            <button class="button rec" title="REC/PLAY">REC/PLAY</button>
+			<button class="button mute" title="Mute track">MUTE</button>
+			<button class="button solo" title="Solo">SOLO</button>
+            <div class="groups"></div>
+			<div class="name"></div>
+            <div class="number"></div>
+		</div>
+	</template>
+
+    <template id="trk_group">
+        <div class="meter_slide tab">
+            <div class="value"></div>
+            <input type="range" orient="vertical" class="slider volume" max="120" />
+            <div class="meter"></div>
+        </div>
+    </template>
+
+    <template id="chan_settings_tpl">
+        <div class="tab">
+            <div class="left_section section">
+                <div class="name read"></div>
+                <input name="track_name" class="name write" style="display: none;" maxlength="8"></input>
+                <div class="number"></div>
+                <div class="color"></div>
+            </div>
+
+            <div class="eq_left_section section">
+                <input class="knob pan" type="text" min="0" max="100" value="50">
+                <button class="button phase">0</button>
+                <button class="button eq_off">EQ OFF</button>
+                
+            </div>
+
+            <div class="eq_section section">
+                <div class="graph_eq"></div>
+                <input class="knob eq_lowcut" type="text" min="0" max="56" value="0">
+                <input class="knob eq_low" type="text" min="0" max="60" value="0">
+                <input class="knob eq_mid" type="text" min="0" max="60" value="0">
+                <input class="knob eq_mid_frq" type="text" min="0" max="96" value="0">
+                <input class="knob eq_high" type="text" min="0" max="60" value="0">
+            </div>
+
+            <div class="efx_section section">
+                <input class="knob efx1" type="text" min="0" max="60" value="0">
+                <input class="knob efx2" type="text" min="0" max="60" value="0">
+            </div>
+        </div>
+    </template>
+
+    
+	<template id="monitor_tpl">
+        <input class="knob" type="text" min="0" max="118" value="0">
+    </template>
+
+    <!-- inserting these scripts at the end to be able to use all the elements in the DOM -->
+    <script src="assets/js/data_formatter.js"></script>
+  	<script src="assets/js/binding.js"></script>
+    <script src="assets/js/controls.js"></script>
+  	<script src="assets/js/main.js"></script>
+  	<script src="assets/js/menu.js"></script>
+    <script src="assets/js/jquery.scrollTo.min.js"></script>
+    <script src="assets/js/fancyknob.js"></script>
+  </body>
+</html>
