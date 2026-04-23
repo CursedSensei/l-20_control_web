@@ -136,11 +136,17 @@ async def on_sysex_message_end(midi_sysex_buffered):
     try:
         message = decode_sysex_message(buffer[1:])
         if message:
-            # await ws_task.send_to_clients(message)
-            data = json.dumps(message, indent=4)
-            with open("track_info.json", "w") as f:
-                f.write(data)
+            if message.get("command") and (message.get("command").get("function") == "track_info" or message.get("command").get("function") == "recall_track_info"):
+                data = json.dumps(message, indent=4)
+                with open(message['command']['function'] + ".json", "w") as f:
+                    f.write(data)
+            elif message is not None:
+                print(message)
+    except Exception as e:
+        traceback.print_exc()
     finally:
+        return
+    
         # also copy a raw version to make a diff on the client:
         raw = raw_decode_sysex_message(buffer)
         # await ws_task.send_to_clients({"command": {"raw": raw}})

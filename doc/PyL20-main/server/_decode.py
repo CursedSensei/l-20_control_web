@@ -162,14 +162,24 @@ def raw_decode_sysex_message(sysex_data : bytearray):
 
 def decode_sysex_message(sysex_data : bytearray):
     sysex_type=sysex_data[1:5]
-    if sysex_type == MIDI_SYSEX_TRACK_INFO:
+    if sysex_type == MIDI_SYSEX_TRACK_INFO or sysex_type == MIDI_SYSEX_RECALL_TRACK_INFO:
         return decode_sysex_track_info(sysex_data)
     sysex_type=sysex_data[1:6]
     if sysex_type == MIDI_SYSEX_TRACK_COLOR:
         return decode_sysex_track_color(sysex_data)
     if sysex_type == MIDI_SYSEX_TRACK_RENAME:
         return decode_sysex_track_rename(sysex_data)
-    print("Unknown SysEx message type: "+str(sysex_type))
+    if sysex_type == MIDI_SYSEX_SCENE_CHANGE:
+        return decode_sysex_scene_change(sysex_data)
+
+    # with open("unknown_sysex.dat", "wb+") as f:
+    #     content = f.read()
+        
+    #     if content.find(sysex_type) == -1:
+    #         print("Unknown SysEx message type: "+str(sysex_type))
+    #         f.seek(0, 2)
+    #         f.write(sysex_type)
+
     return None
 
 def decode_sysex_track_color(sysex_data : bytearray):
@@ -189,15 +199,55 @@ def decode_sysex_track_rename(sysex_data : bytearray):
     print(f"Received track rename: #{chan}: name={newname}")
     return { "command": {"function": "rename", "channel": chan, "name": newname} }
 
+def decode_sysex_scene_change(sysex_data : bytearray):
+    offset=8
+
+    # active | inactive | blinking
+    def scene_status(raw_status: bytearray):
+        status = int(raw_status)
+
+        if status == 0:
+            return "inactive"
+        elif status == 1:
+            return "active"
+        elif status == 2:
+            return "blinking"
+        else:
+            return "unknown"
+
+    scenes = {}
+    for i in range(0, 9):
+        scenes[i+1] = scene_status(sysex_data[offset + i])
+
+    return {"command": {"function": "scene_change", "scenes": scenes}}
+
 def decode_sysex_track_info(sysex_data : bytearray):
+    sysex_type = sysex_data[1:5]
     num_tracks=18
     num_groups=7
     fx_tracks=2
-    offset=9
+    offset=9 if sysex_type == MIDI_SYSEX_TRACK_INFO else 31
     line_len=9
     i = offset
 
-    command = {"function":"track-info", "tracks": [], "master": {"value": 0, "mute": 0}, "monitor": []}
+    if sysex_type == MIDI_SYSEX_RECALL_TRACK_INFO:
+        command = {"function":"recall_track_info", "tracks": [], "master": {"value": 0, "mute": 0}}
+
+        for i in range(0, num_tracks):
+            command["tracks"].append({"number": i, "name": "", "color": 0 , "mute": 0, "values":[], "eq": {}})
+
+        # FX
+        command["tracks"].append({"number":18, "name": "FX1", "mute": 0, "values":[]})
+        command["tracks"].append({"number":19, "name": "FX2", "mute": 0, "values":[]})
+    else:
+        command = {"function":"track_info", "tracks": [], "master": {"value": 0, "mute": 0}, "monitor": []}
+
+        for i in range(0, num_tracks):
+            command["tracks"].append({"number": i, "name": "", "color": 0 , "mute": 0, "solo": 0, "values":[], "eq": {}})
+
+        # FX
+        command["tracks"].append({"number":18, "name": "FX1", "mute": 0, "solo": 0, "values":[]})
+        command["tracks"].append({"number":19, "name": "FX2", "mute": 0, "solo": 0, "values":[]})
 
     # buffer=bytearray()
     # while i < len(sysex_data):
@@ -213,11 +263,7 @@ def decode_sysex_track_info(sysex_data : bytearray):
         f=offset + i*line_len
         t=f+line_len
         d=sysex_data[f:t]
-        command["tracks"].append({"number": i, "name": d.decode('ascii', errors='ignore').replace("\x00",""), "color": 0, "mute": 0, "solo": 0, "values":[], "eq": {}})
-
-    # two FX
-    command["tracks"].append({"number":18, "name": "FX1", "mute": 0, "solo": 0, "values":[]})
-    command["tracks"].append({"number":19, "name": "FX2", "mute": 0, "solo": 0, "values":[]})
+        command["tracks"][i]["name"] = d.decode('ascii', errors='ignore').replace("\x00","")
 
     # track colors:
     offset += num_tracks*line_len #18 namedd tracks
@@ -226,8 +272,13 @@ def decode_sysex_track_info(sysex_data : bytearray):
         d=sysex_data[f]
         command["tracks"][i]["color"]=int(d)
 
-    # yet unknown:
-    offset += num_tracks
+    if sysex_type == MIDI_SYSEX_TRACK_INFO:
+        # REC
+        offset += num_tracks
+        for i in range(0, num_tracks):
+            f=offset + i
+            d=sysex_data[f]
+            command["tracks"][i]["rec"]=int(d)
 
     # mute
     offset += num_tracks #18 tracks
@@ -236,84 +287,82 @@ def decode_sysex_track_info(sysex_data : bytearray):
         d=sysex_data[f]
         command["tracks"][i]["mute"]=int(d)
 
-    # solo
-    offset += num_tracks
-    for i in range(0, num_tracks+fx_tracks):
-        f=offset + i
-        d=sysex_data[f]
-        command["tracks"][i]["solo"]=int(d)
-
-    # REC
-    offset = 21 * line_len
-    for i in range(0, num_tracks):
-        f=offset + i
-        d=sysex_data[f]
-        command["tracks"][i]["rec"]=int(d)
+    if sysex_type == MIDI_SYSEX_TRACK_INFO:
+        # Solo
+        offset += num_tracks
+        for i in range(0, num_tracks):
+            f=offset + i
+            if i == num_tracks+fx_tracks -1:
+                print("Solo offset", f)
+            d=sysex_data[f]
+            command["tracks"][i]["solo"]=int(d)
 
     # EQ: phase
-    offset = 27 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
+        if i == 0:
+            print("EQ phase offset", f)
         d=sysex_data[f]
         command["tracks"][i]["eq"]["phase"]=int(d)
     # EQ: PAN
-    offset = 29 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
         d=sysex_data[f]
         command["tracks"][i]["eq"]["pan"]=int(d)
 
     # EQ: Off
-    offset = 31 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
         d=sysex_data[f]
         command["tracks"][i]["eq"]["eq_off"]=int(d)
     # EQ: High
-    offset = 33 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
         d=sysex_data[f]
         command["tracks"][i]["eq"]["eq_high"]=int(d)
     # EQ: MidFrq
-    offset = 35 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
         d=sysex_data[f]
         command["tracks"][i]["eq"]["eq_mid_frq"]=int(d)
     # EQ: MidGain
-    offset = 37 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
         d=sysex_data[f]
         command["tracks"][i]["eq"]["eq_mid"]=int(d)
     # EQ: Low
-    offset = 39 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
         d=sysex_data[f]
         command["tracks"][i]["eq"]["eq_low"]=int(d)
     # EQ: LowCut
-    offset = 41 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
         d=sysex_data[f]
         command["tracks"][i]["eq"]["eq_lowcut"]=int(d)
     # EQ: EFX1
-    offset = 43 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
         d=sysex_data[f]
         command["tracks"][i]["eq"]["efx1"]=int(d)
     # EQ: EFX2
-    offset = 45 * line_len
+    offset += num_tracks
     for i in range(0, num_tracks):
         f=offset + i
         d=sysex_data[f]
         command["tracks"][i]["eq"]["efx2"]=int(d)
 
     # track volumes start on line 47
-    offset=47*line_len
+    offset += num_tracks
     for g in range(0, num_groups):
         for i in range(0, num_tracks):
             f=offset + i
@@ -322,32 +371,7 @@ def decode_sysex_track_info(sysex_data : bytearray):
             command["tracks"][i]["values"].append(int(d))
         offset+=num_tracks
 
-    # FX mute
-    offset = 62*line_len+1
-    for i in range(2):
-        ti=num_tracks+i
-        f=offset + i
-        d=sysex_data[f]
-        command["tracks"][ti]["mute"]= int(d)
-    # FX solo
-    offset = 62*line_len+3
-    for i in range(2):
-        ti=num_tracks+i
-        f=offset + i
-        d=sysex_data[f]
-        command["tracks"][ti]["solo"]= int(d)
-    # FX levels on line 62
-    offset = 62*line_len + 5
-    for g in range(0, num_groups):
-        for i in range(2):
-            ti=num_tracks+i
-            f=offset + 2*g + i
-            d=sysex_data[f]
-            #print("FX",ti, "g=",g," i=", i, " d=", int(d), " offsets", 2*g+i, " offset=",f)
-            command["tracks"][ti]["values"].append(int(d))
-
     # FX effects
-    offset = 61*line_len
     d=sysex_data[offset]
     print("EFFECT decode")
     print_hex_line(sysex_data[offset:offset+9])
@@ -358,7 +382,6 @@ def decode_sysex_track_info(sysex_data : bytearray):
     command['effects'][1]["effect"]=int(d)
 
     # FX params
-    offset = 61*line_len
     p1=sysex_data[offset+3]
     p2=sysex_data[offset+6]
     command['effects'][0]["param1"]=int(p1)
@@ -368,19 +391,55 @@ def decode_sysex_track_info(sysex_data : bytearray):
     command['effects'][1]["param1"]=int(p1)
     command['effects'][1]["param2"]=int(p2)
 
+    # FX mute
+    offset += line_len + 1
+    for i in range(2):
+        ti=num_tracks+i
+        f=offset + i
+        d=sysex_data[f]
+        command["tracks"][ti]["mute"]= int(d)
+
+    if sysex_type == MIDI_SYSEX_TRACK_INFO:
+        # FX solo
+        offset += 2
+        for i in range(2):
+            ti=num_tracks+i
+            f=offset + i
+            d=sysex_data[f]
+            command["tracks"][ti]["solo"]= int(d)
+
+    # FX levels on line 62
+    offset += 2
+    for g in range(0, num_groups):
+        for i in range(2):
+            ti=num_tracks+i
+            f=offset + 2*g + i
+            d=sysex_data[f]
+            #print("FX",ti, "g=",g," i=", i, " d=", int(d), " offsets", 2*g+i, " offset=",f)
+            command["tracks"][ti]["values"].append(int(d))
+
+
     # master mute
-    offset = 64*line_len + 2
+    if sysex_type == MIDI_SYSEX_TRACK_INFO:
+        offset += 15
+    else:
+        offset += 14
     d=sysex_data[offset]
     command['master']['mute']=int(d)
 
     # master volume (at line 64) followed by monitor volumes
-    offset = 64*line_len + 3
+    offset += 1
     d=sysex_data[offset]
     command['master']['value']=int(d)
-    for i in range(1, num_groups):
-        f=offset + i
-        d=sysex_data[f]
-        command['monitor'].append(int(d))
+
+    if sysex_type != MIDI_SYSEX_RECALL_TRACK_INFO:
+        for i in range(1, num_groups):
+            f=offset + i
+            d=sysex_data[f]
+            command['monitor'].append(int(d))
+
+        scenes = decode_sysex_scene_change(sysex_data[offset + num_groups + 9:])
+        command['scenes'] = scenes["command"]["scenes"]
 
     return { "command": command }
 

@@ -111,6 +111,10 @@ def create_json_message(message):
         elif message.control == MIDI_CC_MASTER_REC:
             func="rec"
             context="main"
+
+        elif message.control == MIDI_CC_SCENE_CHANGE:
+            func="scene_change"
+            context= "scene_save" if chan == 9 else "scene_recall"
         
         # FX channels
         # Volume for tracks 1-16:

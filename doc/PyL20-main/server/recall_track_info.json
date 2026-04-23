@@ -1,13 +1,12 @@
 {
     "command": {
-        "function": "track_info",
+        "function": "recall_track_info",
         "tracks": [
             {
                 "number": 0,
                 "name": "WLeader",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     79,
                     59,
@@ -28,15 +27,13 @@
                     "eq_lowcut": 44,
                     "efx1": 27,
                     "efx2": 19
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 1,
                 "name": "Backup1",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     81,
                     66,
@@ -57,15 +54,13 @@
                     "eq_lowcut": 44,
                     "efx1": 26,
                     "efx2": 17
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 2,
                 "name": "Backup2",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     76,
                     56,
@@ -86,15 +81,13 @@
                     "eq_lowcut": 48,
                     "efx1": 26,
                     "efx2": 17
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 3,
                 "name": "Backup3",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     75,
                     58,
@@ -115,15 +108,13 @@
                     "eq_lowcut": 41,
                     "efx1": 26,
                     "efx2": 23
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 4,
                 "name": "Keyboard",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     71,
                     59,
@@ -144,15 +135,13 @@
                     "eq_lowcut": 14,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 2
+                }
             },
             {
                 "number": 5,
                 "name": "Acoustic",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     60,
                     55,
@@ -173,15 +162,13 @@
                     "eq_lowcut": 38,
                     "efx1": 22,
                     "efx2": 24
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 6,
                 "name": "LeadGtr",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     77,
                     60,
@@ -202,15 +189,13 @@
                     "eq_lowcut": 18,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 7,
                 "name": "BassGtr",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     0,
                     0,
@@ -231,15 +216,13 @@
                     "eq_lowcut": 32,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 8,
                 "name": "BassDrum",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     0,
                     0,
@@ -260,15 +243,13 @@
                     "eq_lowcut": 29,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 9,
                 "name": "Snare",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     51,
                     56,
@@ -289,15 +270,13 @@
                     "eq_lowcut": 20,
                     "efx1": 23,
                     "efx2": 8
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 10,
                 "name": "Tom1",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     85,
                     58,
@@ -318,15 +297,13 @@
                     "eq_lowcut": 25,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 11,
                 "name": "Tom2",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     0,
                     0,
@@ -347,15 +324,13 @@
                     "eq_lowcut": 0,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 12,
                 "name": "FlrTom",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     52,
                     48,
@@ -376,15 +351,13 @@
                     "eq_lowcut": 30,
                     "efx1": 18,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 13,
                 "name": "Ch14",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     0,
                     0,
@@ -405,15 +378,13 @@
                     "eq_lowcut": 49,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 14,
                 "name": "Backup3",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     91,
                     79,
@@ -434,15 +405,13 @@
                     "eq_lowcut": 45,
                     "efx1": 27,
                     "efx2": 21
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 15,
                 "name": "Pastor",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     0,
                     0,
@@ -463,15 +432,13 @@
                     "eq_lowcut": 47,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 16,
                 "name": "CH17_18",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     96,
                     0,
@@ -492,15 +459,13 @@
                     "eq_lowcut": 0,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 17,
                 "name": "CH19_20",
                 "color": 0,
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     0,
                     97,
@@ -521,14 +486,12 @@
                     "eq_lowcut": 0,
                     "efx1": 0,
                     "efx2": 0
-                },
-                "rec": 0
+                }
             },
             {
                 "number": 18,
                 "name": "FX1",
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     79,
                     73,
@@ -543,7 +506,6 @@
                 "number": 19,
                 "name": "FX2",
                 "mute": 0,
-                "solo": 0,
                 "values": [
                     48,
                     51,
@@ -559,14 +521,6 @@
             "value": 37,
             "mute": 0
         },
-        "monitor": [
-            38,
-            61,
-            116,
-            92,
-            118,
-            45
-        ],
         "effects": [
             {
                 "effect": 3,
@@ -578,17 +532,6 @@
                 "param1": 115,
                 "param2": 50
             }
-        ],
-        "scenes": {
-            "1": "active",
-            "2": "inactive",
-            "3": "inactive",
-            "4": "inactive",
-            "5": "inactive",
-            "6": "inactive",
-            "7": "inactive",
-            "8": "inactive",
-            "9": "inactive"
-        }
+        ]
     }
 }
