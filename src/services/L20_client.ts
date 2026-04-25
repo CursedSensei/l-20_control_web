@@ -49,6 +49,11 @@ class L20_client {
             (cb) => cb !== callback
         );
     }
+
+
+    setVolume(trackId: number, faderId: number, volume: number) {
+        
+    }
 }
 
 interface L20GlobalClient {
