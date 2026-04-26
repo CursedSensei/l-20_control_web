@@ -5,15 +5,21 @@ interface CommandType {
     parameters: unknown
 }
 
+export function GET() {
+    const headers = new Headers()
+    headers.set("Upgrade", "websocket")
+    headers.set("Connection", "Upgrade")
+
+    return new Response("Websocket Access Point", {
+        status: 101,
+        headers
+    })
+}
+
 export function UPGRADE(client: WebSocket, server: WebSocketServer) {
     function cleanup() {
         // Remove Listeners
     }
-
-
-    client.on('open', () => {
-        // Set event handlers
-    })
 
     client.on('message', (data) => {
         const command = JSON.parse(data.toString()) as CommandType

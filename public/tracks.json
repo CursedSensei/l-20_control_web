@@ -1,37 +1,92 @@
 [
     {
         "id": 0,
-        "name": "Main",
-        "shown": false
+        "name": "Worship Leader",
+        "shown": true
     },
     {
         "id": 1,
-        "name": "Live",
-        "shown": false
+        "name": "Backup 1 (2nd Leader)",
+        "shown": true
     },
     {
         "id": 2,
-        "name": "Keyboard",
+        "name": "Backup 2",
         "shown": true
     },
     {
         "id": 3,
-        "name": "Acoustic",
+        "name": "Backup 3 (June Mic)",
         "shown": true
     },
     {
         "id": 4,
-        "name": "E. Guitar",
+        "name": "Keyboard",
         "shown": true
     },
     {
         "id": 5,
-        "name": "Bass",
+        "name": "Accoustic Guitar",
         "shown": true
     },
     {
         "id": 6,
-        "name": "Drums",
+        "name": "Electric Guitar",
         "shown": true
+    },
+    {
+        "id": 7,
+        "name": "Bass",
+        "shown": true
+    },
+    {
+        "id": 8,
+        "name": "Kick",
+        "shown": true
+    },
+    {
+        "id": 9,
+        "name": "Snare",
+        "shown": true
+    },
+    {
+        "id": 10,
+        "name": "Tom 1",
+        "shown": true
+    },
+    {
+        "id": 11,
+        "name": "Tom 2",
+        "shown": true
+    },
+    {
+        "id": 12,
+        "name": "Floor Tom",
+        "shown": true
+    },
+    {
+        "id": 13,
+        "name": "TalkBack",
+        "shown": true
+    },
+    {
+        "id": 14,
+        "name": "Backup 4",
+        "shown": true
+    },
+    {
+        "id": 15,
+        "name": "Pastor",
+        "shown": false
+    },
+    {
+        "id": 16,
+        "name": "Stereo 1",
+        "shown": false
+    },
+    {
+        "id": 17,
+        "name": "Stereo 2",
+        "shown": false
     }
 ]

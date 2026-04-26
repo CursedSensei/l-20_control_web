@@ -14,7 +14,7 @@ export default function TrackFaderList() {
 
     useEffect(() => {
         const fetchTracks = () => {
-            fetch("/faders.json")
+            fetch("/tracks.json")
                 .then(data => data.json())
                 .then((data) => {
                     const fetchedtracks= data as TrackType[]
