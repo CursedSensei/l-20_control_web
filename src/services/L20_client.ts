@@ -31,19 +31,20 @@ class L20_client {
         console.log("Connecting to L-20...")
     }
 
-    private invokeEvent(event: L20_Client_Events) {
+    private invokeEvent(event: Websocket_Events) {
         if (!this.eventListeners[event]) return;
         this.eventListeners[event].forEach((callback) => callback());
     }
 
-    on(event: L20_Client_Events, callback: () => void): void {
+    on(event: Websocket_Events, callback: () => void): void {
         if (!this.eventListeners[event]) {
             this.eventListeners[event] = [];
         }
         this.eventListeners[event].push(callback);
     }
 
-    removeListener(event: L20_Client_Events, callback: () => void): void {
+    // Always remove listener when component unmounts to prevent memory leaks
+    removeListener(event: Websocket_Events, callback: () => void): void {
         if (!this.eventListeners[event]) return;
         this.eventListeners[event] = this.eventListeners[event].filter(
             (cb) => cb !== callback

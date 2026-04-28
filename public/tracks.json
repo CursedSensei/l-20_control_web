@@ -2,91 +2,109 @@
     {
         "id": 0,
         "name": "Worship Leader",
-        "shown": true
+        "shown": true,
+        "icon": "Mic"
     },
     {
         "id": 1,
         "name": "Backup 1 (2nd Leader)",
-        "shown": true
+        "shown": true,
+        "icon": "Mic"
     },
     {
         "id": 2,
         "name": "Backup 2",
-        "shown": true
+        "shown": true,
+        "icon": "Mic"
     },
     {
         "id": 3,
         "name": "Backup 3 (June Mic)",
-        "shown": true
+        "shown": true,
+        "icon": "Mic"
+    },
+    {
+        "id": 14,
+        "name": "Backup 4 (Ralph Mic)",
+        "shown": true,
+        "icon": "Mic"
     },
     {
         "id": 4,
         "name": "Keyboard",
-        "shown": true
+        "shown": true,
+        "icon": "Keyboard"
     },
     {
         "id": 5,
         "name": "Accoustic Guitar",
-        "shown": true
+        "shown": true,
+        "icon": "Guitar"
     },
     {
         "id": 6,
         "name": "Electric Guitar",
-        "shown": true
+        "shown": true,
+        "icon": "Guitar"
     },
     {
         "id": 7,
         "name": "Bass",
-        "shown": true
+        "shown": true,
+        "icon": "Guitar"
     },
     {
         "id": 8,
         "name": "Kick",
-        "shown": true
+        "shown": true,
+        "icon": "Drum"
     },
     {
         "id": 9,
         "name": "Snare",
-        "shown": true
+        "shown": true,
+        "icon": "Drum"
     },
     {
         "id": 10,
         "name": "Tom 1",
-        "shown": true
+        "shown": true,
+        "icon": "Drum"
     },
     {
         "id": 11,
         "name": "Tom 2",
-        "shown": true
+        "shown": true,
+        "icon": "Drum"
     },
     {
         "id": 12,
         "name": "Floor Tom",
-        "shown": true
+        "shown": true,
+        "icon": "Drum"
     },
     {
         "id": 13,
         "name": "TalkBack",
-        "shown": true
-    },
-    {
-        "id": 14,
-        "name": "Backup 4",
-        "shown": true
+        "shown": true,
+        "icon": "Mic"
     },
     {
         "id": 15,
         "name": "Pastor",
-        "shown": false
+        "shown": false,
+        "icon": "Mic"
     },
     {
         "id": 16,
         "name": "Stereo 1",
-        "shown": false
+        "shown": false,
+        "icon": "None"
     },
     {
         "id": 17,
         "name": "Stereo 2",
-        "shown": false
+        "shown": false,
+        "icon": "None"
     }
 ]

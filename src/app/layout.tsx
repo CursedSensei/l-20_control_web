@@ -1,6 +1,12 @@
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
+import { Geist, Geist_Mono, Roboto_Slab, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
+
+const robotoSlabHeading = Roboto_Slab({subsets:['latin'],variable:'--font-heading'});
+
+const sourceSans3 = Source_Sans_3({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,9 +31,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", sourceSans3.variable, robotoSlabHeading.variable)}
+      suppressHydrationWarning
     >
-      <body className="min-h-full px-3 py-3">{children}</body>
+      <body className="min-h-full bg-background text-foreground">
+        <ThemeProvider enableSystem attribute="class" defaultTheme="dark">
+          <div className="md:px-6 pb-3 lg:px-20 lg:max-w-420 lg:mx-auto">
+            {children}
+          </div>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

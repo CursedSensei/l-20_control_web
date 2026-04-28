@@ -1,52 +1,30 @@
 'use client'
 
-import { useL20Socket } from "@/contexts/L20SocketContext"
-import { useEffect, useState } from "react"
+import { useL20Channel } from "@/contexts/L20ChannelContext";
+import { fetchFaders } from "@/services/fetchFaders";
+import React, { useEffect, useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
-interface FaderType {
-    id: number,
-    name: string,
-    shown: boolean
-}
-
-export default function FaderSelect() {
-    const [faders, setFaders] = useState<FaderType[]>([])
-    const [selectedId, setSelectedId] = useState<number | undefined>(undefined)
-    const {isConnected} = useL20Socket()
+export default function FaderSelect({className}: React.HTMLAttributes<HTMLDivElement>) {
+    const [faders, setFaders] = useState<FaderJsonType[]>([])
+    const {channelId, setChannelId} = useL20Channel()
 
     useEffect(() => {
-        const fetchFaders = () => {
-            fetch("/faders.json")
-                .then(data => data.json())
-                .then((data) => {
-                    const fetchedFaders = data as FaderType[]
-
-                    setFaders(fetchedFaders.filter((fader) => fader.shown))
-                    
-                    if (fetchedFaders.length > 0) {
-                        setSelectedId(fetchedFaders[0].id)
-                    }
-                })
-                .catch(async () => {
-                    await new Promise(r => setTimeout(r, 1000))
-                    fetchFaders()
-                })
-        }
-
-        fetchFaders()
+        fetchFaders().then((fetchedFaders) => {
+            setFaders(fetchedFaders.filter((fader) => fader.shown))
+        })
     }, [])
 
-    useEffect(() => {
-        if (selectedId == undefined) return
-
-        // set fader id to controller
-    }, [selectedId])
-
     return (
-        <select disabled={!isConnected} className="w-full rounded-md px-2 py-3 text-xl outline-none border bg-secondary" onChange={(e) => setSelectedId(e.target.value as unknown as number)}>
-            {faders.map((fader, _) => (
-                <option key={fader.id} value={fader.id}>{fader.name}</option>
-            ))}
-        </select>
+        <Select onValueChange={(val) => setChannelId(val)} value={channelId ?? ''}>
+            <SelectTrigger className={`text-xl w-full px-3 py-6 select-none ${className}`}>
+                <SelectValue placeholder="Select Your Channel" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+                {faders.map((fader, _) => (
+                    <SelectItem className="text-md" key={fader.id} value={fader.id.toString()}>{fader.name}</SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
     )
 }

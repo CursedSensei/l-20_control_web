@@ -1,10 +1,5 @@
 import { WebSocket, WebSocketServer } from 'ws';
 
-interface CommandType {
-    command: "volume",
-    parameters: unknown
-}
-
 export function GET() {
     const headers = new Headers()
     headers.set("Upgrade", "websocket")
@@ -22,13 +17,16 @@ export function UPGRADE(client: WebSocket, server: WebSocketServer) {
     }
 
     client.on('message', (data) => {
-        const command = JSON.parse(data.toString()) as CommandType
+        const command = JSON.parse(data.toString()) as Websocket_Message
 
-        if (command.command == "volume") {
-            // L20_Client.setVolume()
+        console.log("Received Command: " + command.command)
+
+        if (command.command == "change_volume") {
+            const volumeCommand = command as Websocket_Volume_Change
+            console.log("Volume Change - Track ID: " + volumeCommand.track_id + ", Group ID: " + volumeCommand.group_id + ", Volume: " + volumeCommand.volume)
         }
 
-        // TODO: Add more commands
+        // Handle Commands
     })
 
     client.on('close', () => {
@@ -40,4 +38,17 @@ export function UPGRADE(client: WebSocket, server: WebSocketServer) {
         cleanup()
         client.close()
     })
+
+    const data: Websocket_Track_Info = {
+        command: "track_info",
+        tracks: [],
+        fx_tracks: [],
+        master: {
+            mute: false,
+            volume: 0,
+            solo: false,
+        }
+    } 
+
+    client.send(JSON.stringify(data))
 }
