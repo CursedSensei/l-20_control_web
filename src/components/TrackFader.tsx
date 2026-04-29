@@ -2,7 +2,7 @@
 
 import { useL20Socket } from "@/contexts/L20SocketContext";
 import { Volume, Volume2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { FaderIcon } from "./FaderIcon";
 import { MuteButton } from "./MuteButton";
 import { FaderSlider } from "./ui/FaderSlider";
@@ -13,44 +13,97 @@ interface TrackFaderProps {
     fxTrack?: boolean,
     masterTrack?: boolean,
     first?: boolean
-    last?: boolean
+    last?: boolean,
+    
+    finalVolumeState?: [number, React.Dispatch<React.SetStateAction<number>>],
+    newVolumeRef?: RefObject<number>
+    isSendingState?: [boolean, React.Dispatch<React.SetStateAction<boolean>>],
+    sendVolumeFunction?: () => Promise<void>
 }
 
-export default function TrackFader({track, orientation, first, last, masterTrack}: TrackFaderProps) {
-    const {isProcessing, setTrackVolume} = useL20Socket()
-    const [volume, setVolume] = useState<number>(60)
+export default function TrackFader({track, orientation, first, last, masterTrack, newVolumeRef, isSendingState, sendVolumeFunction, finalVolumeState}: TrackFaderProps) {
+    const {isProcessing, setTrackVolume, trackConsumers} = useL20Socket()
+
+    const [volume, setVolume] = useState<number>(newVolumeRef?.current ?? 60)
+    const [finalVolume, setFinalVolume] = finalVolumeState ?? useState<number>(60)
     const [lastVolume, setLastVolume] = useState<number>(5)
     const [isMuted, setIsMuted] = useState(true)
-    const [isSending, setIsSending] = useState(false)
     const [isSettingVolume, setIsSettingVolume] = useState(false)
+    const [isSending, setIsSending] = isSendingState ?? useState(false)
 
-    const lastUpdatedVolume = useRef<number>(60)
-    const newVolume = useRef<number>(60)
+    const volumeTimeout = useRef<NodeJS.Timeout | null>(null)
+    const newVolume = newVolumeRef ?? useRef<number>(60)
 
     async function sendVolume() {
         setIsSending(true)
+        var lastUpdatedVolume = -1
 
-        while (lastUpdatedVolume.current != newVolume.current) {
-            lastUpdatedVolume.current = newVolume.current
-            setTrackVolume({track_id: track.id, volume: lastUpdatedVolume.current, isMaster: masterTrack ?? false})
+        while (lastUpdatedVolume != newVolume.current) {
+            lastUpdatedVolume = newVolume.current
+            setTrackVolume({track_id: track.id, volume: lastUpdatedVolume, isMaster: masterTrack ?? false})
             await new Promise((r) => setTimeout(r, 100))
         }
 
         setIsSending(false)
     }
 
+
+    
     useEffect(() => {
-        if (volume == 0) setIsMuted(true);
-        else setIsMuted(false);
+        if (newVolume.current == volume) return;
 
         newVolume.current = volume
 
         if (!isSending) {
-            sendVolume()
+            if (sendVolumeFunction) {
+                sendVolumeFunction()
+            } else {
+                sendVolume()
+            }
         }
     }, [volume])
 
+    useEffect(() => {
+        if (isSettingVolume) {
+            if (volume == 0) setIsMuted(true);
+            else setIsMuted(false);
+        } else {
+            if (finalVolume == 0) setIsMuted(true);
+            else setIsMuted(false);
+        }
+    }, [volume, finalVolume, isSettingVolume])
+
+    useEffect(() => {
+        if (finalVolumeState) return;
+
+        trackConsumers.current[track.id] = (volume: number) => {
+            setFinalVolume(volume)
+        }
+
+        return () => {
+            delete trackConsumers.current[track.id]
+        }
+    }, [])
+
+
+    
+    function startSettingVolumeState() {
+        setIsSettingVolume(true)
+        volumeTimeout.current && clearTimeout(volumeTimeout.current)
+        volumeTimeout.current = null
+    }
+
+    function stopSettingVolumeState() {
+        volumeTimeout.current = setTimeout(() => {
+            setIsSettingVolume(false)
+        }, 500)
+    }
+
+
+
     function handleMute() {
+        startSettingVolumeState()
+
         if (isMuted) {
             setVolume(lastVolume)
         }
@@ -58,17 +111,21 @@ export default function TrackFader({track, orientation, first, last, masterTrack
             setLastVolume(volume)
             setVolume(0)
         }
+
+        stopSettingVolumeState()
     }
 
     function handleInputVolume(val: number) {
+        startSettingVolumeState()
         setVolume(val)
-        setIsSettingVolume(true)
     }
 
     function handleCommitVolume(val: number) {
+        stopSettingVolumeState()
         setVolume(val)
-        setIsSettingVolume(false)
     }
+
+
 
     if (orientation == "vertical") {
         return (
@@ -76,7 +133,7 @@ export default function TrackFader({track, orientation, first, last, masterTrack
                 <FaderIcon iconName={track.icon} />
                 <h4 className="text-lg mb-7 text-center select-none">{track.name}</h4>
 
-                <FaderSlider className="mb-7" disabled={isProcessing} iconBackground="bg-sidebar" orientation="vertical" value={[volume]} onValueChange={(val) => handleInputVolume(val[0])} onValueCommit={(val) => handleCommitVolume(val[0])} />
+                <FaderSlider className="mb-7" disabled={isProcessing} iconBackground="bg-sidebar" orientation="vertical" value={[isSettingVolume ? volume : finalVolume]} onValueChange={(val) => handleInputVolume(val[0])} onValueCommit={(val) => handleCommitVolume(val[0])} />
                 <MuteButton isMuted={isMuted} handleMute={handleMute} />
             </div>
         )
@@ -96,7 +153,7 @@ export default function TrackFader({track, orientation, first, last, masterTrack
                 <Volume />
                 <Volume2 />
             </div>
-            <FaderSlider className="mb-2" iconBackground="bg-background" disabled={isProcessing} value={[volume]} onValueChange={(val) => setVolume(val as unknown as number)} />
+            <FaderSlider className="mb-2" iconBackground="bg-background" disabled={isProcessing} value={[isSettingVolume ? volume : finalVolume]} onValueChange={(val) => handleInputVolume(val[0])} onValueCommit={(val) => handleCommitVolume(val[0])} />
         </div>
     )
 }
