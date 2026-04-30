@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# L20 Mixer Control Web Interface
+
+A modern web-based control interface for the Zoom L-20 mixer, built specifically for musicians to control their personal monitor mix volumes. This application provides real-time mixing capabilities with an intuitive UI for controlling faders, effects, and monitor sends directly from any device on the network.
+
+## Features
+
+- **Real-time Fader Control**: 18 channel faders with live volume adjustment
+- **Master & Effects Control**: Dedicated controls for master, FX1, and FX2 tracks
+- **Effects Sends**: Adjustable send levels to FX1 and FX2
+- **Responsive Design**: Works seamlessly on desktop and tablet interfaces
+- **WebSocket Integration**: Real-time synchronization with L20 hardware via Python backend
+<!-- - **Channel Management**: Mute and solo functionality for individual channels -->
+<!-- - **Pan Control**: Stereo pan adjustment per channel -->
+<!-- - **EQ Control**: Phase, EQ on/off, low-cut filter, and 3-band EQ (low, mid, high) -->
+
+## Tech Stack
+
+- **Frontend**: [Next.js 16](https://nextjs.org) with React 19
+- **Styling**: [Tailwind CSS](https://tailwindcss.com) with custom animations
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com) + [Radix UI](https://www.radix-ui.com)
+- **Real-time Communication**: [next-ws](https://www.npmjs.com/package/next-ws) (WebSocket support)
+- **Backend**: Python L20 controller (TCP socket communication)
+
+## Prerequisites
+
+- Node.js 18+ and npm/yarn/pnpm
+- Python 3.7+ (for the L20 controller backend)
+- L-20 audio mixer hardware
 
 ## Getting Started
 
-First, run the development server:
+### Frontend Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Install dependencies
+npm install
+
+# Prepare Websocket for NextJS (next-ws)
+npm run prepare
+
+# Build NextJS
+npm run build
+
+# Run the server (runs on port 80)
+npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will be available at `http://localhost:80`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Backend Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Navigate to the `l20_controller` directory and set up the Python environment:
 
-## Learn More
+```bash
+cd l20_controller
+pip install -r requirements.txt
+python controller.py
+```
 
-To learn more about Next.js, take a look at the following resources:
+The Python controller handles BLE communication with the L20 mixer hardware and bridges it via UNIX Socket to the NextJS backend.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Configuration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The application uses JSON configuration files stored in the `public/` directory:
 
-## Deploy on Vercel
+- **`public/faders.json`**: Defines fader channels and their properties (names, IDs, etc.)
+- **`public/tracks.json`**: Specifies track layouts and configurations for the mixer interface
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+These files are loaded at runtime to configure the mixer interface without requiring code changes.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
+
+```
+├── src/
+│   ├── app/                 # Next.js app router
+│   │   ├── api/ws/         # WebSocket endpoint
+│   │   ├── layout.tsx      # Root layout
+│   │   └── page.tsx        # Main page
+│   ├── components/          # React components
+│   │   ├── ui/             # shadcn/ui custom components
+│   │   ├── MainFaderDrawer.tsx
+│   │   ├── TrackFader.tsx
+│   │   ├── TrackFaderList.tsx
+│   │   └── ...
+│   ├── contexts/            # React contexts
+│   │   ├── L20SocketContext.tsx    # WebSocket state management
+│   │   └── L20ChannelContext.tsx
+│   ├── services/            # API/client services
+│   │   ├── L20_client.ts    # L20 controller communication
+│   │   └── fetchFaders.ts
+│   ├── constants.ts         # App constants
+│   └── types.ts             # TypeScript type definitions
+├── l20_controller/          # Python backend
+│   ├── controller.py        # Main L20 controller
+│   ├── decode.py            # L20 protocol decoding
+│   ├── const.py             # Constants
+│   └── requirements.txt
+└── public/                  # Static assets
+    ├── faders.json
+    └── tracks.json
+```
+
+### Communication Flow
+
+```
+L20 Mixer (Hardware)
+    ↓ (BLE Communication)
+l20_controller/controller.py
+    ↓ (UNIX SOCKET)
+Next.js API route (src/app/api/ws/route.ts)
+    ↓ (Websocket)
+L20SocketContext
+    ↓ (State)
+React Components (Faders, Effects)
+```
+
+The application maintains a bidirectional WebSocket connection with the backend. User interactions (volume changes, mute) are sent as commands and hardware state updates are received and applied to the UI in real-time.
+
+## Scripts
+
+```bash
+npm run dev      # Start development server on port 80
+npm run build    # Build for production
+npm start        # Start production server on port 80
+npm run lint     # Run ESLint
+npm run prepare  # Prepare Websocket for NextJS
+```
+
+## Screenshots
+
+<div align="center">
+    <img src="./screenshots/main-page.png" alt="L20 Control Interface" width="48%" />
+    <img src="./screenshots/output-fx-drawer.png" alt="L20 Control Interface - Output & FX Channels" width="48%" />
+</div>
+
+
+## Development Notes
+
+- The app runs on **port 80** by default (can be changed in `package.json`)
+- WebSocket patches are applied automatically via `next-ws patch` in the prepare script
+- Component library uses Radix UI primitives with Tailwind CSS styling
+- Theme support with [next-themes](https://github.com/pacocur/next-themes)
+
+## Things To Complete
+
+- Complete `l20_controller` Python backend implementation
+
+## Acknowledgements
+
+This project uses the [PyL20](https://github.com/robig/PyL20) library by [Robert Gröber (robig)](https://github.com/robig) for L20 BLE protocol communication. I am grateful for the excellent work on reverse-engineering and documenting the L20 protocol.
