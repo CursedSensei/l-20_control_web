@@ -1,37 +1,110 @@
 [
     {
         "id": 0,
-        "name": "Main",
-        "shown": false
+        "name": "Worship Leader",
+        "shown": true,
+        "icon": "Mic"
     },
     {
         "id": 1,
-        "name": "Live",
-        "shown": false
+        "name": "Backup 1 (2nd Leader)",
+        "shown": true,
+        "icon": "Mic"
     },
     {
         "id": 2,
-        "name": "Keyboard",
-        "shown": true
+        "name": "Backup 2",
+        "shown": true,
+        "icon": "Mic"
     },
     {
         "id": 3,
-        "name": "Acoustic",
-        "shown": true
+        "name": "Backup 3 (June Mic)",
+        "shown": true,
+        "icon": "Mic"
+    },
+    {
+        "id": 14,
+        "name": "Backup 4 (Ralph Mic)",
+        "shown": true,
+        "icon": "Mic"
     },
     {
         "id": 4,
-        "name": "E. Guitar",
-        "shown": true
+        "name": "Keyboard",
+        "shown": true,
+        "icon": "Keyboard"
     },
     {
         "id": 5,
-        "name": "Bass",
-        "shown": true
+        "name": "Accoustic Guitar",
+        "shown": true,
+        "icon": "Guitar"
     },
     {
         "id": 6,
-        "name": "Drums",
-        "shown": true
+        "name": "Electric Guitar",
+        "shown": true,
+        "icon": "Guitar"
+    },
+    {
+        "id": 7,
+        "name": "Bass",
+        "shown": true,
+        "icon": "Guitar"
+    },
+    {
+        "id": 8,
+        "name": "Kick",
+        "shown": true,
+        "icon": "Drum"
+    },
+    {
+        "id": 9,
+        "name": "Snare",
+        "shown": true,
+        "icon": "Drum"
+    },
+    {
+        "id": 10,
+        "name": "Tom 1",
+        "shown": true,
+        "icon": "Drum"
+    },
+    {
+        "id": 11,
+        "name": "Tom 2",
+        "shown": true,
+        "icon": "Drum"
+    },
+    {
+        "id": 12,
+        "name": "Floor Tom",
+        "shown": true,
+        "icon": "Drum"
+    },
+    {
+        "id": 13,
+        "name": "TalkBack",
+        "shown": true,
+        "icon": "Mic"
+    },
+    {
+        "id": 15,
+        "name": "Pastor",
+        "shown": false,
+        "icon": "Mic"
+    },
+    {
+        "id": 16,
+        "name": "Stereo 1",
+        "shown": false,
+        "icon": "None"
+    },
+    {
+        "id": 17,
+        "name": "Stereo 2",
+        "shown": false,
+        "icon": "None"
     }
 ]
