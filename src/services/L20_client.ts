@@ -12,6 +12,7 @@ class L20_client {
     master: L20_Fader;
 
     isConnected: boolean;
+    client: net.Socket | null;
     private eventListeners: {
         [event: string]: ((parameters: Consumer_Parameter_Type) => void)[];
     } = {};
@@ -24,6 +25,7 @@ class L20_client {
             volume: 0,
         };
         this.isConnected = false;
+        this.client = null;
 
         for (let i = 0; i < 7; i++) {
             const tracks: L20_Track[] = []
@@ -67,15 +69,15 @@ class L20_client {
 
         while (true) {
             try {
-                const client = new net.Socket();
+                this.client = new net.Socket();
                 var readBuffer = Buffer.alloc(0);
 
                 await new Promise((resolve, reject) => {
-                    client.connect(port, '127.0.0.1', () => resolve(null))
-                    client.on('error', reject)
+                    this.client!.connect(port, '127.0.0.1', () => resolve(null))
+                    this.client!.on('error', reject)
                 })
 
-                client.on('data', (data) => {
+                this.client.on('data', (data) => {
                     readBuffer = Buffer.concat([readBuffer, data]);
                     let nullIndex: number = readBuffer.indexOf(0);
 
@@ -157,12 +159,13 @@ class L20_client {
                 })
 
                 await new Promise((resolve) => {
-                    client.on('close', resolve)
-                    client.on('error', resolve)
+                    this.client!.on('close', resolve)
+                    this.client!.on('error', resolve)
                 })
                 
-                client.destroy();
                 this.isConnected = false;
+                this.client!.destroy();
+                this.client = null;
                 this.invokeEvent("connection_status", { isConnected: this.isConnected })
             } catch (error) {
                 console.error("Error connecting to L-20:", error)
@@ -175,6 +178,12 @@ class L20_client {
     private invokeEvent(event: Websocket_Events, parameters: Consumer_Parameter_Type) {
         if (!this.eventListeners[event]) return;
         this.eventListeners[event].forEach((callback) => callback(parameters));
+    }
+
+    private sendMessage(message: string) {
+        if (this.isConnected) {
+            this.client?.write(message + "\0");
+        }
     }
 
     on(event: Websocket_Events, callback: (parameters: Consumer_Parameter_Type) => void): void {
@@ -194,15 +203,25 @@ class L20_client {
 
 
     setVolume(trackId: number, channelId: number, volume: number) {
-        // TODO: Implement Send Volume Change Command to L-20
-        
-        const data: Consumer_Volume_Change = {
-            track_id: trackId,
-            channel_id: channelId,
-            volume: volume
-        }
+        if (this.isConnected) {
+            let track_id = trackId
 
-        this.invokeEvent("change_volume", data)
+            if (trackId === FX_1_TRACK_ID) {
+                track_id = 0
+            } else if (trackId === FX_2_TRACK_ID) {
+                track_id = 1
+            }
+
+            const message: TCP_Volume_Change = {
+                event: "change_volume",
+                type: trackId === MASTER_TRACK_ID ? "master" : (trackId === FX_1_TRACK_ID || trackId === FX_2_TRACK_ID) ? "fx" : "track",
+                track_id: track_id,
+                channel_id: channelId,
+                volume: volume
+            };
+            
+            this.sendMessage(JSON.stringify(message));
+        }
     }
 
     websocketTrackInfoBychannelId(channelId: number | null): Websocket_Track_Info | null {

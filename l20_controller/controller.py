@@ -7,11 +7,11 @@ from bleak.backends.scanner import AdvertisementData
 from bleak import BleakGATTCharacteristic
 from mido import Message
 
-from .protocol import L20_Track, Raw_Track_Info, TCP_Track_Info, TCP_Volume_Change
+from .protocol import L20_Track, Raw_Track_Info, TCP_Message, TCP_Track_Info, TCP_Volume_Change
 from .decode import decode_sysex_message
 from .json_messages import create_json_message, parse_non_midi_message
 from .json_messages import create_json_message
-from .const import BLE_MIDI_UUID, CMD_TRACK_INFO, DATA_PREFIX, MIDI_CC, MIDI_SYSEX_END, MIDI_SYSEX_START
+from .const import BLE_MIDI_UUID, CMD_TRACK_INFO, DATA_PREFIX, MIDI_CC, MIDI_CC_BASE, MIDI_CC_FX_GROUPS, MIDI_CC_MONITOR, MIDI_CC_TRACK_GROUPS, MIDI_CC_TRACK_ST_GROUPS, MIDI_CHAN_FX1, MIDI_CHAN_FX_GROUPS, MIDI_SYSEX_END, MIDI_SYSEX_START
 from .tcpsocket import TCPSocketServer
 
 logging.basicConfig(format="%(asctime)s %(levelname)-5s %(module)-8s:%(lineno)d %(message)s", level=logging.INFO)
@@ -111,9 +111,38 @@ def on_sysex_message_end() -> TCP_Track_Info | None:
 async def addMessageListeners(socket: TCPSocketServer, client: BleakClient):
     global mixerListener
 
-    def socketMessageListener(message: dict):
+    async def socketMessageListener(message: TCP_Message):
         if not client.is_connected:
             return
+        
+        if message['event'] == "change_volume":
+            volumeChangeMessage: TCP_Volume_Change = message
+            data = None
+
+            if volumeChangeMessage['type'] == "track":
+                channel = volumeChangeMessage['channel_id']
+                control = None
+
+                if channel < 16:
+                    control = MIDI_CC_TRACK_GROUPS[channel]
+                else:
+                    channel -= 16
+                    control = MIDI_CC_TRACK_ST_GROUPS[channel]
+
+                data = bytearray([MIDI_CC_BASE + volumeChangeMessage['track_id'], control, volumeChangeMessage['volume']])
+            elif volumeChangeMessage['type'] == "fx":
+                channel = volumeChangeMessage['channel_id']
+                control = MIDI_CC_FX_GROUPS[channel]
+
+                data = bytearray([MIDI_CC_BASE + MIDI_CHAN_FX_GROUPS[channel] + volumeChangeMessage['track_id'], control, volumeChangeMessage['volume']])
+            elif volumeChangeMessage['type'] == "master":
+                # TODO: Handle for Master Volume Changes
+                data = bytearray([MIDI_CC_BASE + volumeChangeMessage['channel_id'] - 1, MIDI_CC_MONITOR, volumeChangeMessage['volume']])
+
+            if data:
+                await client.write_gatt_char(BLE_MIDI_UUID, DATA_PREFIX + data)
+        
+
         
     def mixerMessageListener(sender: BleakGATTCharacteristic, data: bytearray):
         global receiving_midi_sysex
