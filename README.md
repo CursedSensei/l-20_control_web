@@ -49,15 +49,16 @@ The app will be available at `http://localhost:80`
 
 ### Backend Setup
 
-Navigate to the `l20_controller` directory and set up the Python environment:
+Set up the Python environment and run Backend Controller:
 
 ```bash
-cd l20_controller
-pip install -r requirements.txt
-python controller.py
+python -m venv .venv
+pip install -r l20_controller/requirements.txt
+
+python -m l20_controller.controller
 ```
 
-The Python controller handles BLE communication with the L20 mixer hardware and bridges it via UNIX Socket to the NextJS backend.
+The Python controller handles BLE communication with the L20 mixer hardware and bridges it via TCP Socket to the NextJS backend.
 
 ## Configuration
 
@@ -91,10 +92,14 @@ These files are loaded at runtime to configure the mixer interface without requi
 │   ├── constants.ts         # App constants
 │   └── types.ts             # TypeScript type definitions
 ├── l20_controller/          # Python backend
-│   ├── controller.py        # Main L20 controller
-│   ├── decode.py            # L20 protocol decoding
-│   ├── const.py             # Constants
-│   └── requirements.txt
+│   ├── controller.py        # Main L20 controller & BLE device management
+│   ├── tcpsocket.py         # TCP socket server
+│   ├── protocol.py          # Message protocol definitions
+│   ├── decode.py            # L20 protocol decoding & MIDI parsing
+│   ├── json_messages.py     # JSON message creation & parsing
+│   ├── const.py             # MIDI constants and channel mappings
+│   ├── __init__.py          # Package initialization
+│   └── requirements.txt     # Python dependencies (bleak, mido)
 └── public/                  # Static assets
     ├── faders.json
     └── tracks.json
@@ -106,7 +111,7 @@ These files are loaded at runtime to configure the mixer interface without requi
 L20 Mixer (Hardware)
     ↓ (BLE Communication)
 l20_controller/controller.py
-    ↓ (UNIX SOCKET)
+    ↓ (TCP Socket)
 Next.js API route (src/app/api/ws/route.ts)
     ↓ (Websocket)
 L20SocketContext
@@ -115,6 +120,16 @@ React Components (Faders, Effects)
 ```
 
 The application maintains a bidirectional WebSocket connection with the backend. User interactions (volume changes, mute) are sent as commands and hardware state updates are received and applied to the UI in real-time.
+
+## Backend Features
+
+The Python backend (`l20_controller`) includes:
+
+- **BLE Device Discovery**: Automatic scanning and connection to L-20 mixer devices
+- **MIDI Protocol Handling**: Full MIDI CC and SYSEX message processing for mixer control
+- **TCP Socket Server**: Establishes TCP connection with the NextJS WebSocket endpoint
+- **Real-time State Synchronization**: Tracks and transmits mixer channel information, volumes, and effects
+- **JSON Message Protocol**: Structured communication between backend and frontend
 
 ## Scripts
 
@@ -140,10 +155,6 @@ npm run prepare  # Prepare Websocket for NextJS
 - WebSocket patches are applied automatically via `next-ws patch` in the prepare script
 - Component library uses Radix UI primitives with Tailwind CSS styling
 - Theme support with [next-themes](https://github.com/pacocur/next-themes)
-
-## Things To Complete
-
-- Complete `l20_controller` Python backend implementation
 
 ## Acknowledgements
 
