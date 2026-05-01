@@ -29,12 +29,12 @@ export function L20SocketProvider({children}: Readonly<{children: React.ReactNod
 
     function switchChannel() {
         if (channelIdRef.current != null) {
-            console.log("Requesting channel change to channel " + channelIdRef.current)
             const channelMessage: Websocket_Change_Channel = {
                 command: "change_channel",
                 channel_id: channelIdRef.current
             }
 
+            setIsProcessing(true)
             socket.current?.send(JSON.stringify(channelMessage))
         }
     }
@@ -90,12 +90,6 @@ export function L20SocketProvider({children}: Readonly<{children: React.ReactNod
                 const connectionMessage = message as Websocket_Connection_Status
                 if (connectionMessage.status == "connected") {
                     setIsConnected(true)
-
-                    const initMessage: Websocket_Message = {
-                        command: "track_info"
-                    }
-                    
-                    socket.current?.send(JSON.stringify(initMessage))
                 } else {
                     setIsConnected(false)
                     setIsProcessing(true)
@@ -106,15 +100,15 @@ export function L20SocketProvider({children}: Readonly<{children: React.ReactNod
 
     function startWebsocket() {
         const newSocket = new WebSocket("api/ws")
-        socket.current = newSocket
-        socket.current.onopen = () => {
+        newSocket.onopen = () => {
+            socket.current = newSocket
             switchChannel()
         }
-        socket.current.onmessage = (event) => {
+        newSocket.onmessage = (event) => {
             const data = JSON.parse(event.data)
             handleReceivedMessage(data)
         }
-        socket.current.onclose = () => {
+        newSocket.onclose = () => {
             setIsConnected(false)
             setIsProcessing(true)
 
@@ -123,7 +117,7 @@ export function L20SocketProvider({children}: Readonly<{children: React.ReactNod
                 setTimeout(startWebsocket, 1000)
             }
         }
-        socket.current.onerror = () => {
+        newSocket.onerror = () => {
             setIsConnected(false)
             setIsProcessing(true)
 
@@ -144,10 +138,7 @@ export function L20SocketProvider({children}: Readonly<{children: React.ReactNod
             return
         } else {
             channelIdRef.current = parseInt(channelId)
-
-            if (isConnected) {
-                switchChannel()
-            }
+            switchChannel()
         }
 
         localStorage.setItem("channelId", channelId.toString())

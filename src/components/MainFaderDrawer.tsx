@@ -77,6 +77,7 @@ export function MainFaderDrawer({open, setOpen}: {open: boolean, setOpen: (open:
                     />
                     <TrackFader
                         track={{id: MASTER_TRACK_ID, name: "Main", icon: "Headphone", shown: true}}
+                        maxVolume={118}
                         orientation="vertical"
                         isSendingState={[isSendingMaster, setIsSendingMaster]}
                         newVolumeRef={MasterVolume}
