@@ -30,6 +30,10 @@ export function UPGRADE(client: WebSocket, server: WebSocketServer) {
             command: "connection_status",
             status: isConnected ? "connected" : "disconnected"
         } as Websocket_Connection_Status))
+
+        if (isConnected) {
+            sendTrackInfo()
+        }
     }
 
     function handleTrackInfo() {
@@ -81,11 +85,8 @@ export function UPGRADE(client: WebSocket, server: WebSocketServer) {
     client.on('message', (data) => {
         const command = JSON.parse(data.toString()) as Websocket_Message
 
-        console.log("Received Command: " + command.command)
-
         if (command.command == "change_volume") {
             const volumeCommand = command as Websocket_Volume_Change
-            console.log("Volume Change - Track ID: " + volumeCommand.track_id + ", Group ID: " + selectedChannel +  ", Volume: " + volumeCommand.volume)
 
             if (selectedChannel !== null) {
                 L20_Client.setVolume(volumeCommand.track_id, selectedChannel, volumeCommand.volume)
@@ -94,8 +95,7 @@ export function UPGRADE(client: WebSocket, server: WebSocketServer) {
             sendTrackInfo()
         } else if (command.command == "change_channel") {
             const newSelectedChannel = (command as Websocket_Change_Channel).channel_id;
-            console.log("Change Channel - From: " + selectedChannel + ", To: " + newSelectedChannel)
-            selectedChannel = newSelectedChannel;
+            selectedChannel = newSelectedChannel
             sendTrackInfo()
         }
     })
@@ -116,8 +116,7 @@ export function UPGRADE(client: WebSocket, server: WebSocketServer) {
 
     const data: Websocket_Connection_Status = {
         command: "connection_status",
-        // status: L20_Client.isConnected ? "connected" : "disconnected"
-        status: "connected"
+        status: L20_Client.isConnected ? "connected" : "disconnected"
     }
 
     client.send(JSON.stringify(data))

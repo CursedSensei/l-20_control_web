@@ -9,6 +9,7 @@ import { FaderSlider } from "./ui/FaderSlider";
 
 interface TrackFaderProps {
     track: TrackJsonType,
+    maxVolume?: number,
     orientation?: "horizontal" | "vertical",
     fxTrack?: boolean,
     masterTrack?: boolean,
@@ -21,7 +22,7 @@ interface TrackFaderProps {
     sendVolumeFunction?: () => Promise<void>
 }
 
-export default function TrackFader({track, orientation, first, last, masterTrack, newVolumeRef, isSendingState, sendVolumeFunction, finalVolumeState}: TrackFaderProps) {
+export default function TrackFader({track, maxVolume, orientation, first, last, masterTrack, newVolumeRef, isSendingState, sendVolumeFunction, finalVolumeState}: TrackFaderProps) {
     const {isProcessing, setTrackVolume, trackConsumers} = useL20Socket()
 
     const [volume, setVolume] = useState<number>(newVolumeRef?.current ?? 60)
@@ -133,7 +134,7 @@ export default function TrackFader({track, orientation, first, last, masterTrack
                 <FaderIcon iconName={track.icon} />
                 <h4 className="text-lg mb-7 text-center select-none">{track.name}</h4>
 
-                <FaderSlider className="mb-7" disabled={isProcessing} iconBackground="bg-sidebar" orientation="vertical" value={[isSettingVolume ? volume : finalVolume]} onValueChange={(val) => handleInputVolume(val[0])} onValueCommit={(val) => handleCommitVolume(val[0])} />
+                <FaderSlider className="mb-7" disabled={isProcessing} max={maxVolume ?? 120} iconBackground="bg-sidebar" orientation="vertical" value={[isSettingVolume ? volume : finalVolume]} onValueChange={(val) => handleInputVolume(val[0])} onValueCommit={(val) => handleCommitVolume(val[0])} />
                 <MuteButton isMuted={isMuted} handleMute={handleMute} />
             </div>
         )
@@ -153,7 +154,7 @@ export default function TrackFader({track, orientation, first, last, masterTrack
                 <Volume />
                 <Volume2 />
             </div>
-            <FaderSlider className="mb-2" iconBackground="bg-background" disabled={isProcessing} value={[isSettingVolume ? volume : finalVolume]} onValueChange={(val) => handleInputVolume(val[0])} onValueCommit={(val) => handleCommitVolume(val[0])} />
+            <FaderSlider className="mb-2" iconBackground="bg-background" disabled={isProcessing} max={maxVolume ?? 120} value={[isSettingVolume ? volume : finalVolume]} onValueChange={(val) => handleInputVolume(val[0])} onValueCommit={(val) => handleCommitVolume(val[0])} />
         </div>
     )
 }

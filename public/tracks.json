@@ -1,31 +1,31 @@
 [
     {
         "id": 0,
-        "name": "Worship Leader",
+        "name": "Shure Mic (Lead Vocal)",
         "shown": true,
         "icon": "Mic"
     },
     {
         "id": 1,
-        "name": "Backup 1 (2nd Leader)",
+        "name": "LD 1 (Backup Vocal)",
         "shown": true,
         "icon": "Mic"
     },
     {
         "id": 2,
-        "name": "Backup 2",
+        "name": "LD 2 (Backup Vocal)",
         "shown": true,
         "icon": "Mic"
     },
     {
         "id": 3,
-        "name": "Backup 3 (June Mic)",
+        "name": "Joson 1 (Backup Vocal)",
         "shown": true,
         "icon": "Mic"
     },
     {
         "id": 14,
-        "name": "Backup 4 (Ralph Mic)",
+        "name": "Joson 2 (Backup Vocal)",
         "shown": true,
         "icon": "Mic"
     },
@@ -37,7 +37,7 @@
     },
     {
         "id": 5,
-        "name": "Accoustic Guitar",
+        "name": "Acoustic Guitar",
         "shown": true,
         "icon": "Guitar"
     },
