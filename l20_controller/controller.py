@@ -11,7 +11,7 @@ from .protocol import L20_Track, Raw_Track_Info, TCP_Message, TCP_Track_Info, TC
 from .decode import decode_sysex_message
 from .json_messages import create_json_message, parse_non_midi_message
 from .json_messages import create_json_message
-from .const import BLE_MIDI_UUID, CMD_TRACK_INFO, DATA_PREFIX, MIDI_CC, MIDI_CC_BASE, MIDI_CC_FX_GROUPS, MIDI_CC_MONITOR, MIDI_CC_TRACK_GROUPS, MIDI_CC_TRACK_ST_GROUPS, MIDI_CHAN_FX1, MIDI_CHAN_FX_GROUPS, MIDI_SYSEX_END, MIDI_SYSEX_START
+from .const import BLE_MIDI_UUID, CMD_TRACK_INFO, DATA_PREFIX, MIDI_CC, MIDI_CC_BASE, MIDI_CC_FX_GROUPS, MIDI_CC_MASTER_VOLUME, MIDI_CC_MONITOR, MIDI_CC_TRACK_GROUPS, MIDI_CC_TRACK_ST_GROUPS, MIDI_CHAN_FX1, MIDI_CHAN_FX_GROUPS, MIDI_SYSEX_END, MIDI_SYSEX_START
 from .tcpsocket import TCPSocketServer
 
 logging.basicConfig(format="%(asctime)s %(levelname)-5s %(module)-8s:%(lineno)d %(message)s", level=logging.INFO)
@@ -121,23 +121,27 @@ async def addMessageListeners(socket: TCPSocketServer, client: BleakClient):
 
             if volumeChangeMessage['type'] == "track":
                 channel = volumeChangeMessage['channel_id']
+                track_id = volumeChangeMessage['track_id']
                 control = None
 
-                if channel < 16:
+                if track_id < 16:
                     control = MIDI_CC_TRACK_GROUPS[channel]
                 else:
-                    channel -= 16
+                    track_id -= 16
                     control = MIDI_CC_TRACK_ST_GROUPS[channel]
 
-                data = bytearray([MIDI_CC_BASE + volumeChangeMessage['track_id'], control, volumeChangeMessage['volume']])
+                data = bytearray([MIDI_CC_BASE + track_id, control, volumeChangeMessage['volume']])
             elif volumeChangeMessage['type'] == "fx":
                 channel = volumeChangeMessage['channel_id']
                 control = MIDI_CC_FX_GROUPS[channel]
 
                 data = bytearray([MIDI_CC_BASE + MIDI_CHAN_FX_GROUPS[channel] + volumeChangeMessage['track_id'], control, volumeChangeMessage['volume']])
             elif volumeChangeMessage['type'] == "master":
-                # TODO: Handle for Master Volume Changes
-                data = bytearray([MIDI_CC_BASE + volumeChangeMessage['channel_id'] - 1, MIDI_CC_MONITOR, volumeChangeMessage['volume']])
+                if volumeChangeMessage['channel_id'] == 0 or volumeChangeMessage['channel_id'] == None:
+                    pass # Broke the mixer' bluetooth module on live, to be tested later after live session.
+                    data = bytearray([MIDI_CC_BASE, MIDI_CC_MASTER_VOLUME, volumeChangeMessage['volume']])
+                else:
+                    data = bytearray([MIDI_CC_BASE + volumeChangeMessage['channel_id'] - 1, MIDI_CC_MONITOR, volumeChangeMessage['volume']])
 
             if data:
                 await client.write_gatt_char(BLE_MIDI_UUID, DATA_PREFIX + data)
@@ -173,7 +177,7 @@ async def addMessageListeners(socket: TCPSocketServer, client: BleakClient):
                         "volume": message['value'],
                         "type": "fx"
                     }
-                elif message['context'] == "master":
+                elif message['context'] == "main":
                     volumeChangeMessage = {
                         "event": "change_volume",
                         "track_id": 0,
