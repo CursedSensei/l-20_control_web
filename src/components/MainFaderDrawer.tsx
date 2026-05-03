@@ -3,9 +3,11 @@ import { useL20Socket } from "@/contexts/L20SocketContext";
 import { useEffect, useRef, useState } from "react";
 import TrackFader from "./TrackFader";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
+import { useL20Channel } from "@/contexts/L20ChannelContext";
 
 export function MainFaderDrawer({open, setOpen}: {open: boolean, setOpen: (open: boolean) => void}) {
     const {setTrackVolume, trackConsumers} = useL20Socket()
+    const {channelId} = useL20Channel()
 
     const [isSendingFX1, setIsSendingFX1] = useState(false)
     const [isSendingFX2, setIsSendingFX2] = useState(false)
@@ -77,7 +79,7 @@ export function MainFaderDrawer({open, setOpen}: {open: boolean, setOpen: (open:
                     />
                     <TrackFader
                         track={{id: MASTER_TRACK_ID, name: "Main", icon: "Headphone", shown: true}}
-                        maxVolume={118}
+                        maxVolume={channelId == '0' ? 120 : 118}
                         orientation="vertical"
                         isSendingState={[isSendingMaster, setIsSendingMaster]}
                         newVolumeRef={MasterVolume}
