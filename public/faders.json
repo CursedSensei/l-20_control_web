@@ -2,13 +2,13 @@
     {
         "id": 0,
         "name": "Main",
-        "shown": false,
+        "shown": true,
         "persist": false
     },
     {
         "id": 1,
         "name": "Live",
-        "shown": false,
+        "shown": true,
         "persist": false
     },
     {

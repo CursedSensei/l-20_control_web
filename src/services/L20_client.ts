@@ -121,15 +121,18 @@ class L20_client {
                                             trackInfo.mixes[channel_id].tracks.forEach((track) => {
                                                 if (track.volume != this.mixes[channel_id].tracks[track.track_id].volume) {
                                                     this.setVolume(track.track_id, channel_id, this.mixes[channel_id].tracks[track.track_id].volume)
+                                                    track.volume = this.mixes[channel_id].tracks[track.track_id].volume
                                                 }
                                             })
 
                                             if (trackInfo.mixes[channel_id].fx_tracks[0].volume != this.mixes[channel_id].fx_tracks[0].volume) {
                                                 this.setVolume(FX_1_TRACK_ID, channel_id, this.mixes[channel_id].fx_tracks[0].volume)
+                                                trackInfo.mixes[channel_id].fx_tracks[0].volume = this.mixes[channel_id].fx_tracks[0].volume
                                             }
 
                                             if (trackInfo.mixes[channel_id].fx_tracks[1].volume != this.mixes[channel_id].fx_tracks[1].volume) {
                                                 this.setVolume(FX_2_TRACK_ID, channel_id, this.mixes[channel_id].fx_tracks[1].volume)
+                                                trackInfo.mixes[channel_id].fx_tracks[1].volume = this.mixes[channel_id].fx_tracks[1].volume
                                             }
                                         }
                                     }
