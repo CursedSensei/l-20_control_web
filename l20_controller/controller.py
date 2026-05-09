@@ -64,6 +64,8 @@ def on_sysex_message_end() -> TCP_Track_Info | None:
                 }
 
                 if func == "track_info" or func == "recall_track_info":
+                    track_info['event'] = func
+
                     for i in range(0, 7):
                         channel_id = i
                         tracks: list[L20_Track] = []

@@ -1,4 +1,5 @@
 import { FX_1_TRACK_ID, FX_2_TRACK_ID, MASTER_TRACK_ID } from "@/constants";
+import fs from 'node:fs';
 import * as net from "node:net";
 
 class L20_client {
@@ -6,10 +7,13 @@ class L20_client {
         [channel_id: number]: {
             monitor: L20_Fader;
             fx_tracks: { [track_id: number]: L20_Fader }
-            tracks: L20_Track[]
+            tracks: L20_Track[],
+            persist: boolean
         };
     };
     master: L20_Fader;
+
+    fadersJson: FaderJsonType[] = []
 
     isConnected: boolean;
     client: net.Socket | null;
@@ -26,6 +30,18 @@ class L20_client {
         };
         this.isConnected = false;
         this.client = null;
+
+        try {
+            const fadersData = fs.readFileSync('public/faders.json', 'utf-8');
+            
+            if (!fadersData) {
+                throw new Error("Fader configuration file is empty or missing.");
+            }
+
+            this.fadersJson = JSON.parse(fadersData);
+        } catch (error) {
+            console.error("Error parsing fader configuration:", error);
+        }
 
         for (let i = 0; i < 7; i++) {
             const tracks: L20_Track[] = []
@@ -57,7 +73,8 @@ class L20_client {
                         volume: 0,
                     }
                 },
-                tracks: [...tracks]
+                tracks: [...tracks],
+                persist: this.fadersJson[i]?.persist ?? false
             };
         }
         
@@ -87,22 +104,41 @@ class L20_client {
                         try {
                             const message = JSON.parse(messageBuffer.toString()) as TCP_Message
 
-                            if (message.event === "track_info") {
+                            if (message.event === "track_info" || message.event === "recall_track_info") {
                                 const trackInfo = message as TCP_Track_Info
 
-                                for (const channel_id in trackInfo.mixes) {
-                                    if (channel_id == '0') {
+                                for (const raw_channel_id in trackInfo.mixes) {
+                                    const channel_id = parseInt(raw_channel_id)
+
+                                    if (channel_id == 0) {
                                         this.master = trackInfo.mixes[channel_id].master
                                     }
 
-                                    if (trackInfo.mixes[channel_id].master.volume === null) {
-                                        trackInfo.mixes[channel_id].master.volume = this.mixes[parseInt(channel_id)]?.monitor.volume ?? 0
+                                    if (message.event === "recall_track_info") {
+                                        trackInfo.mixes[channel_id].master.volume = this.mixes[channel_id]?.monitor.volume ?? 0;
+                                        
+                                        if (this.mixes[channel_id]?.persist) {
+                                            trackInfo.mixes[channel_id].tracks.forEach((track) => {
+                                                if (track.volume != this.mixes[channel_id].tracks[track.track_id].volume) {
+                                                    this.setVolume(track.track_id, channel_id, this.mixes[channel_id].tracks[track.track_id].volume)
+                                                }
+                                            })
+
+                                            if (trackInfo.mixes[channel_id].fx_tracks[0].volume != this.mixes[channel_id].fx_tracks[0].volume) {
+                                                this.setVolume(FX_1_TRACK_ID, channel_id, this.mixes[channel_id].fx_tracks[0].volume)
+                                            }
+
+                                            if (trackInfo.mixes[channel_id].fx_tracks[1].volume != this.mixes[channel_id].fx_tracks[1].volume) {
+                                                this.setVolume(FX_2_TRACK_ID, channel_id, this.mixes[channel_id].fx_tracks[1].volume)
+                                            }
+                                        }
                                     }
-                                    
-                                    this.mixes[parseInt(channel_id)] = {
+
+                                    this.mixes[channel_id] = {
                                         monitor: trackInfo.mixes[channel_id].master,
                                         fx_tracks: trackInfo.mixes[channel_id].fx_tracks,
-                                        tracks: trackInfo.mixes[channel_id].tracks
+                                        tracks: trackInfo.mixes[channel_id].tracks,
+                                        persist: this.fadersJson[channel_id]?.persist ?? false
                                     }
                                 }
 

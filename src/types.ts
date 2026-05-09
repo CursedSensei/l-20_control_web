@@ -86,7 +86,8 @@ interface TCP_Connection_Status extends TCP_Message {
 interface FaderJsonType {
     id: number,
     name: string,
-    shown: boolean
+    shown: boolean,
+    persist: boolean
 }
 
 interface TrackJsonType {
@@ -115,5 +116,5 @@ type Consumer_Function = (parameters: Consumer_Parameter_Type) => void;
 
 // Extra Types
 type Websocket_Events = "track_info" | "change_volume" | "change_channel" | "connection_status";
-type TCP_Events = "change_volume" | "connection_status" | "track_info";
+type TCP_Events = "change_volume" | "connection_status" | "track_info" | "recall_track_info";
 type IconName = "Drum" | "Guitar" | "Keyboard" | "Mic" | "Speaker" | "Headphone" | "None";

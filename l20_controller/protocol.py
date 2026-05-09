@@ -38,7 +38,7 @@ class Raw_Track_Info(TypedDict):
 
 
 
-Unix_Events = Literal["change_volume", "connection_status", "track_info"]
+TCP_Events = Literal["change_volume", "connection_status", "track_info", "recall_track_info"]
 
 class L20_Fader(TypedDict):
     volume: int
@@ -49,7 +49,7 @@ class L20_Track(L20_Fader):
     track_id: int
 
 class TCP_Message(TypedDict):
-    event: Unix_Events
+    event: TCP_Events
 
 class TCP_Volume_Change(TCP_Message):
     track_id: int
