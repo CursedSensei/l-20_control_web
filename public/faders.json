@@ -2,36 +2,43 @@
     {
         "id": 0,
         "name": "Main",
-        "shown": false
+        "shown": true,
+        "persist": false
     },
     {
         "id": 1,
         "name": "Live",
-        "shown": false
+        "shown": true,
+        "persist": false
     },
     {
         "id": 2,
         "name": "Keyboard",
-        "shown": true
+        "shown": true,
+        "persist": true
     },
     {
         "id": 3,
         "name": "Acoustic",
-        "shown": true
+        "shown": true,
+        "persist": true
     },
     {
         "id": 4,
         "name": "Electric Guitar",
-        "shown": true
+        "shown": true,
+        "persist": true
     },
     {
         "id": 5,
         "name": "Bass",
-        "shown": true
+        "shown": true,
+        "persist": true
     },
     {
         "id": 6,
         "name": "Drums",
-        "shown": true
+        "shown": true,
+        "persist": true
     }
 ]
