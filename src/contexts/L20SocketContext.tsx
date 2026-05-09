@@ -99,7 +99,7 @@ export function L20SocketProvider({children}: Readonly<{children: React.ReactNod
     }
 
     function startWebsocket() {
-        const newSocket = new WebSocket("api/ws")
+        const newSocket = new WebSocket("ws://mixer.eloquenceprojects.org/api/ws")
         newSocket.onopen = () => {
             socket.current = newSocket
             switchChannel()

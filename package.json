@@ -2,6 +2,13 @@
   "name": "l-20_control_web",
   "version": "0.1.0",
   "private": true,
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "not dead",
+    "ios_saf >= 15",
+    "safari >= 15"
+  ],
   "scripts": {
     "dev": "next dev -p 80",
     "build": "next build",
