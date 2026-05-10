@@ -1,9 +1,9 @@
 import { FX_1_TRACK_ID, FX_2_TRACK_ID, MASTER_TRACK_ID } from "@/constants";
+import { useL20Channel } from "@/contexts/L20ChannelContext";
 import { useL20Socket } from "@/contexts/L20SocketContext";
 import { useEffect, useRef, useState } from "react";
-import TrackFader from "./TrackFader";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
-import { useL20Channel } from "@/contexts/L20ChannelContext";
+import TrackFader from "../TrackFader";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
 
 export function MainFaderDrawer({open, setOpen}: {open: boolean, setOpen: (open: boolean) => void}) {
     const {setTrackVolume, trackConsumers} = useL20Socket()

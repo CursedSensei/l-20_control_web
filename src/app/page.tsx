@@ -1,9 +1,9 @@
 'use client'
 
 import { ConnectionDialog } from "@/components/ConnectionDialog";
-import { MainFaderDrawer } from "@/components/MainFaderDrawer";
-import { TopBar } from "@/components/TopBar";
-import TrackFaderList from "@/components/TrackFaderList";
+import { MainFaderDrawer } from "@/components/layout/MainFaderDrawer";
+import { TopBar } from "@/components/layout/TopBar";
+import TrackFaderList from "@/components/layout/TrackFaderList";
 import { L20ChannelProvider } from "@/contexts/L20ChannelContext";
 import { L20SocketProvider } from "@/contexts/L20SocketContext";
 import { useState } from "react";

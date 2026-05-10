@@ -2,9 +2,9 @@
 
 import { RotateCcw, Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import TrackFader from "./TrackFader";
-import { Field, FieldLabel } from "./ui/field";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./ui/input-group";
+import TrackFader from "../TrackFader";
+import { Field, FieldLabel } from "../ui/field";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
 
 export default function TrackFaderList() {
     const [tracks, setTracks] = useState<TrackJsonType[]>([])
