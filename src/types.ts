@@ -87,7 +87,8 @@ interface FaderJsonType {
     id: number,
     name: string,
     shown: boolean,
-    persist: boolean
+    persist: boolean,
+    permanentTracks: number[]
 }
 
 interface TrackJsonType {

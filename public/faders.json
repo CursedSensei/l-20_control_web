@@ -3,42 +3,49 @@
         "id": 0,
         "name": "Main",
         "shown": true,
-        "persist": false
+        "persist": false,
+        "permanentTracks": [16, 17]
     },
     {
         "id": 1,
         "name": "Live",
         "shown": true,
-        "persist": false
+        "persist": false,
+        "permanentTracks": [16, 17]
     },
     {
         "id": 2,
         "name": "Keyboard",
         "shown": true,
-        "persist": true
+        "persist": true,
+        "permanentTracks": []
     },
     {
         "id": 3,
         "name": "Acoustic",
         "shown": true,
-        "persist": true
+        "persist": true,
+        "permanentTracks": []
     },
     {
         "id": 4,
         "name": "Electric Guitar",
         "shown": true,
-        "persist": true
+        "persist": true,
+        "permanentTracks": []
     },
     {
         "id": 5,
         "name": "Bass",
         "shown": true,
-        "persist": true
+        "persist": true,
+        "permanentTracks": []
     },
     {
         "id": 6,
         "name": "Drums",
         "shown": true,
-        "persist": true
+        "persist": true,
+        "permanentTracks": []
     }
 ]

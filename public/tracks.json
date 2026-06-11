@@ -98,7 +98,7 @@
     {
         "id": 16,
         "name": "Stereo 1",
-        "shown": true,
+        "shown": false,
         "icon": "None"
     },
     {

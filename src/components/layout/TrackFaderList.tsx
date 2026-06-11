@@ -1,5 +1,6 @@
 'use client'
 
+import { useL20Channel } from "@/contexts/L20ChannelContext";
 import { RotateCcw, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import TrackFader from "../TrackFader";
@@ -9,15 +10,15 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "
 export default function TrackFaderList() {
     const [tracks, setTracks] = useState<TrackJsonType[]>([])
     const [searchTerm, setSearchTerm] = useState<string>("")
+    const { allChannels, channelId } = useL20Channel()
 
     useEffect(() => {
         const fetchTracks = () => {
             fetch("/tracks.json")
                 .then(data => data.json())
                 .then((data) => {
-                    const fetchedtracks= data as TrackJsonType[]
-
-                    setTracks(fetchedtracks.filter((track) => track.shown))
+                    const fetchedtracks = data as TrackJsonType[]
+                    setTracks(fetchedtracks)
                 })
                 .catch(async () => {
                     await new Promise(r => setTimeout(r, 1000))
@@ -28,7 +29,12 @@ export default function TrackFaderList() {
         fetchTracks()
     }, [])
 
-    const filteredTracks = tracks.filter((track) => track.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    const filteredTracks = tracks.filter((track) => {
+        if (track.shown || (channelId !== undefined && allChannels[parseInt(channelId)].permanentTracks.includes(track.id))) {
+            return track.name.toLowerCase().includes(searchTerm.toLowerCase())
+        }
+        return false
+    })
 
     return (
         <section className="min-h-screen flex flex-col pt-4">
