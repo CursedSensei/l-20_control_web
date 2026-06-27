@@ -130,9 +130,11 @@ export default function TrackFader({track, maxVolume, orientation, first, last, 
 
     if (orientation == "vertical") {
         return (
-            <div className={"w-full px-3 py-6 border border-accent border-b-0 border-x-0 md:border-x! flex flex-col items-center"}>
-                <FaderIcon iconName={track.icon} />
-                <h4 className="text-lg mb-7 text-center select-none">{track.name}</h4>
+            <div className={"basis-full min-w-27.5 px-3 py-6 border border-accent border-b-0 border-x-0 md:border-x! flex flex-col items-center"}>
+                <div className="h-45.5 flex flex-col items-center">
+                    <FaderIcon iconName={track.icon} />
+                    <h4 className="text-lg mb-7 text-center select-none">{track.name}</h4>
+                </div>
 
                 <FaderSlider className="mb-7" disabled={isProcessing} max={maxVolume ?? 120} iconBackground="bg-sidebar" orientation="vertical" value={[isSettingVolume ? volume : finalVolume]} onValueChange={(val) => handleInputVolume(val[0])} onValueCommit={(val) => handleCommitVolume(val[0])} />
                 <MuteButton isMuted={isMuted} handleMute={handleMute} />

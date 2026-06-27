@@ -96,7 +96,6 @@ export function UPGRADE(client: WebSocket, server: WebSocketServer) {
         } else if (command.command == "change_channel") {
             const newSelectedChannel = (command as Websocket_Change_Channel).channel_id;
             selectedChannel = newSelectedChannel
-            sendTrackInfo()
         }
     })
 

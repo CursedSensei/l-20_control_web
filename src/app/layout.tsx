@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Geist, Geist_Mono, Roboto_Slab, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 
@@ -35,10 +35,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background text-foreground">
-        <ThemeProvider enableSystem attribute="class" defaultTheme="dark">
-          <div className="md:px-6 pb-3 lg:px-20 lg:max-w-420 lg:mx-auto">
+        <ThemeProvider>
+          <main className="md:px-6 pb-3 lg:px-20 lg:mx-auto">
             {children}
-          </div>
+          </main>
         </ThemeProvider>
       </body>
     </html>

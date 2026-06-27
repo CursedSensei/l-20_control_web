@@ -119,3 +119,5 @@ type Consumer_Function = (parameters: Consumer_Parameter_Type) => void;
 type Websocket_Events = "track_info" | "change_volume" | "change_channel" | "connection_status";
 type TCP_Events = "change_volume" | "connection_status" | "track_info" | "recall_track_info";
 type IconName = "Drum" | "Guitar" | "Keyboard" | "Mic" | "Speaker" | "Headphone" | "None";
+type Screen_Orientation = "horizontal" | "vertical";
+type Screen_Orientation_Mode = "horizontal" | "vertical" | "auto";

@@ -14,6 +14,7 @@ interface L20SocketContextType {
     isConnected: boolean,
     isProcessing: boolean,
     setTrackVolume: ({track_id, volume, isMaster}: Track_Volume_Parameters) => void,
+    requestTrackInfo: () => void,
     trackConsumers: RefObject<{[track_id: number]: (volume: number) => void}>
 }
 
@@ -52,6 +53,19 @@ export function L20SocketProvider({children}: Readonly<{children: React.ReactNod
         }
 
         socket.current?.send(JSON.stringify(track))
+    }
+
+    function requestTrackInfo() {
+        if (channelId == undefined) {
+            return
+        }
+
+        const trackInfoRequest: Websocket_Message = {
+            command: "track_info"
+        }
+
+        setIsProcessing(true)
+        socket.current?.send(JSON.stringify(trackInfoRequest))
     }
 
     function handleReceivedMessage(message: Websocket_Message) {
@@ -146,7 +160,7 @@ export function L20SocketProvider({children}: Readonly<{children: React.ReactNod
     }, [channelId])
 
     return (
-        <L20SocketContext.Provider value={{isConnected, isProcessing, setTrackVolume, trackConsumers}}>
+        <L20SocketContext.Provider value={{isConnected, isProcessing, setTrackVolume, requestTrackInfo, trackConsumers}}>
             {children}
         </L20SocketContext.Provider>
     )
