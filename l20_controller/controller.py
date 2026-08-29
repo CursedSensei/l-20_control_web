@@ -12,7 +12,7 @@ from .decode import decode_sysex_message
 from .json_messages import create_json_message, parse_non_midi_message
 from .json_messages import create_json_message
 from .const import BLE_MIDI_UUID, CMD_TRACK_INFO, DATA_PREFIX, MIDI_CC, MIDI_CC_BASE, MIDI_CC_BASE_MASTER, MIDI_CC_FX_GROUPS, MIDI_CC_MASTER_VOLUME, MIDI_CC_MONITOR, MIDI_CC_TRACK_GROUPS, MIDI_CC_TRACK_ST_GROUPS, MIDI_CHAN_FX1, MIDI_CHAN_FX_GROUPS, MIDI_SYSEX_END, MIDI_SYSEX_START
-from .tcpsocket import TCPSocketServer
+from .websocket import WebSocketClient
 
 logging.basicConfig(format="%(asctime)s %(levelname)-5s %(module)-8s:%(lineno)d %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ response_queue = []
 receiving_midi_sysex = False
 mixerListener = None
 
-async def findMixerDevice(socket: TCPSocketServer) -> BLEDevice:
+async def findMixerDevice(socket: WebSocketClient) -> BLEDevice:
     while socket.isConnected:
         logger.info("Scanning for L-20 mixer devices for 5 seconds...")
 
@@ -110,7 +110,7 @@ def on_sysex_message_end() -> TCP_Track_Info | None:
 
     return None
 
-async def addMessageListeners(socket: TCPSocketServer, client: BleakClient):
+async def addMessageListeners(socket: WebSocketClient, client: BleakClient):
     global mixerListener
 
     async def socketMessageListener(message: TCP_Message):
@@ -232,7 +232,7 @@ async def addMessageListeners(socket: TCPSocketServer, client: BleakClient):
     mixerListener = mixerMessageListener
 
 async def main():
-    socket = TCPSocketServer()
+    socket = WebSocketClient()
 
     while True:
         await socket.wait_for_client()

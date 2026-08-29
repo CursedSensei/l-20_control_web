@@ -113,15 +113,22 @@ export function L20SocketProvider({children}: Readonly<{children: React.ReactNod
     }
 
     function startWebsocket() {
-        const host = window.location.host;
-        const newSocket = new WebSocket(`ws://${host}/api/ws`)
+        const newSocket = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_PROTOCOL}://${process.env.NEXT_PUBLIC_SERVER_URL}/api/ws`)
         newSocket.onopen = () => {
             socket.current = newSocket
-            switchChannel()
+
+            newSocket.send(localStorage.getItem("l20_auth") ?? "null")
         }
         newSocket.onmessage = (event) => {
-            const data = JSON.parse(event.data)
-            handleReceivedMessage(data)
+            // Ignore Auth Response
+            
+            // Tell server the selected
+            switchChannel()
+
+            newSocket.onmessage = (event) => {
+                const data = JSON.parse(event.data)
+                handleReceivedMessage(data)
+            }
         }
         newSocket.onclose = () => {
             setIsConnected(false)

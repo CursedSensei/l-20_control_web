@@ -1,8 +1,8 @@
 import { FX_1_TRACK_ID, FX_2_TRACK_ID, MASTER_TRACK_ID } from "@/constants";
+import { WebSocket } from 'ws';
 import fs from 'node:fs';
-import * as net from "node:net";
 
-class L20_client {
+export class L20_client {
     mixes: {
         [channel_id: number]: {
             monitor: L20_Fader;
@@ -16,7 +16,7 @@ class L20_client {
     fadersJson: FaderJsonType[] = []
 
     isConnected: boolean;
-    client: net.Socket | null;
+    client: WebSocket | null;
     private eventListeners: {
         [event: string]: ((parameters: Consumer_Parameter_Type) => void)[];
     } = {};
@@ -77,141 +77,131 @@ class L20_client {
                 persist: this.fadersJson[i]?.persist ?? false
             };
         }
-        
-        this.connect();
     }
 
     private async connect() {
-        const port = 30012;
-
-        while (true) {
-            try {
-                this.client = new net.Socket();
-                var readBuffer = Buffer.alloc(0);
-
-                await new Promise((resolve, reject) => {
-                    this.client!.connect(port, '127.0.0.1', () => resolve(null))
-                    this.client!.on('error', reject)
-                })
-
-                this.client.on('data', (data) => {
-                    readBuffer = Buffer.concat([readBuffer, data]);
-                    let nullIndex: number = readBuffer.indexOf(0);
-
-                    while (nullIndex !== -1) {
-                        const messageBuffer = readBuffer.subarray(0, nullIndex);
-
-                        try {
-                            const message = JSON.parse(messageBuffer.toString()) as TCP_Message
-
-                            if (message.event === "track_info" || message.event === "recall_track_info") {
-                                const trackInfo = message as TCP_Track_Info
-
-                                for (const raw_channel_id in trackInfo.mixes) {
-                                    const channel_id = parseInt(raw_channel_id)
-
-                                    if (channel_id == 0) {
-                                        this.master = trackInfo.mixes[channel_id].master
-                                    }
-
-                                    if (message.event === "recall_track_info") {
-                                        trackInfo.mixes[channel_id].master.volume = this.mixes[channel_id]?.monitor.volume ?? 0;
-                                        
-                                        if (this.mixes[channel_id]?.persist) {
-                                            trackInfo.mixes[channel_id].tracks.forEach((track) => {
-                                                if (track.volume != this.mixes[channel_id].tracks[track.track_id].volume) {
-                                                    this.setVolume(track.track_id, channel_id, this.mixes[channel_id].tracks[track.track_id].volume)
-                                                    track.volume = this.mixes[channel_id].tracks[track.track_id].volume
-                                                }
-                                            })
-
-                                            if (trackInfo.mixes[channel_id].fx_tracks[0].volume != this.mixes[channel_id].fx_tracks[0].volume) {
-                                                this.setVolume(FX_1_TRACK_ID, channel_id, this.mixes[channel_id].fx_tracks[0].volume)
-                                                trackInfo.mixes[channel_id].fx_tracks[0].volume = this.mixes[channel_id].fx_tracks[0].volume
-                                            }
-
-                                            if (trackInfo.mixes[channel_id].fx_tracks[1].volume != this.mixes[channel_id].fx_tracks[1].volume) {
-                                                this.setVolume(FX_2_TRACK_ID, channel_id, this.mixes[channel_id].fx_tracks[1].volume)
-                                                trackInfo.mixes[channel_id].fx_tracks[1].volume = this.mixes[channel_id].fx_tracks[1].volume
-                                            }
-                                        }
-                                    }
-
-                                    this.mixes[channel_id] = {
-                                        monitor: trackInfo.mixes[channel_id].master,
-                                        fx_tracks: trackInfo.mixes[channel_id].fx_tracks,
-                                        tracks: trackInfo.mixes[channel_id].tracks,
-                                        persist: this.fadersJson[channel_id]?.persist ?? false
-                                    }
-                                }
-
-                                this.invokeEvent("track_info", trackInfo)
-                            } else if (message.event === "change_volume") {
-                                const volumeChange = message as TCP_Volume_Change
-                                let consumerVolumeChange: Consumer_Volume_Change | null = null
-
-                                if (volumeChange.type === "master") {
-                                    if (volumeChange.channel_id === null) {
-                                        this.master.volume = volumeChange.volume
-                                        volumeChange.channel_id = 0
-                                    }
-                                    this.mixes[volumeChange.channel_id].monitor.volume = volumeChange.volume
-
-                                    consumerVolumeChange = {
-                                        track_id: MASTER_TRACK_ID,
-                                        channel_id: volumeChange.channel_id,
-                                        volume: volumeChange.volume
-                                    }
-                                } else if (volumeChange.type === "fx") {
-                                    this.mixes[volumeChange.channel_id!].fx_tracks[volumeChange.track_id].volume = volumeChange.volume
-
-                                    consumerVolumeChange = {
-                                        track_id: volumeChange.track_id == 0 ? FX_1_TRACK_ID : FX_2_TRACK_ID,
-                                        channel_id: volumeChange.channel_id!,
-                                        volume: volumeChange.volume
-                                    }
-                                } else if (volumeChange.type === "track") {
-                                    this.mixes[volumeChange.channel_id!].tracks[volumeChange.track_id].volume = volumeChange.volume
-
-                                    consumerVolumeChange = {
-                                        track_id: volumeChange.track_id,
-                                        channel_id: volumeChange.channel_id!,
-                                        volume: volumeChange.volume
-                                    }
-                                }
-
-                                if (consumerVolumeChange) {
-                                    this.invokeEvent("change_volume", consumerVolumeChange)
-                                }
-                            } else if (message.event === "connection_status") {
-                                const connectionStatus = message as TCP_Connection_Status
-                                this.isConnected = connectionStatus.status === "connected";
-                                this.invokeEvent("connection_status", { isConnected: this.isConnected })
-                            }
-                        } catch (error) {
-                            console.error("Error parsing message from L-20 controller:", error)
-                        }
-                        
-                        readBuffer = readBuffer.subarray(nullIndex + 1);
-                        nullIndex = readBuffer.indexOf(0);
-                    }
-                })
-
-                await new Promise((resolve) => {
-                    this.client!.on('close', resolve)
-                    this.client!.on('error', resolve)
-                })
-                
-                this.isConnected = false;
-                this.client!.destroy();
-                this.client = null;
-                this.invokeEvent("connection_status", { isConnected: this.isConnected })
-            } catch (error) {
-                console.error("Error connecting to L-20:", error)
-            }
-
-            await new Promise((r) => setTimeout(r, 1000))
+        if (this.client === null || this.client.readyState === WebSocket.CLOSED) {
+            this.client = null;
+            return;
         }
+
+        try {
+            this.client.on('message', (data: WebSocket.RawData) => {
+                try {
+                    const message = JSON.parse(data.toString()) as TCP_Message
+
+                    if (message.event === "track_info" || message.event === "recall_track_info") {
+                        const trackInfo = message as TCP_Track_Info
+
+                        for (const raw_channel_id in trackInfo.mixes) {
+                            const channel_id = parseInt(raw_channel_id)
+
+                            if (channel_id == 0) {
+                                this.master = trackInfo.mixes[channel_id].master
+                            }
+
+                            if (message.event === "recall_track_info") {
+                                trackInfo.mixes[channel_id].master.volume = this.mixes[channel_id]?.monitor.volume ?? 0;
+                                
+                                if (this.mixes[channel_id]?.persist) {
+                                    trackInfo.mixes[channel_id].tracks.forEach((track) => {
+                                        if (track.volume != this.mixes[channel_id].tracks[track.track_id].volume) {
+                                            this.setVolume(track.track_id, channel_id, this.mixes[channel_id].tracks[track.track_id].volume)
+                                            track.volume = this.mixes[channel_id].tracks[track.track_id].volume
+                                        }
+                                    })
+
+                                    if (trackInfo.mixes[channel_id].fx_tracks[0].volume != this.mixes[channel_id].fx_tracks[0].volume) {
+                                        this.setVolume(FX_1_TRACK_ID, channel_id, this.mixes[channel_id].fx_tracks[0].volume)
+                                        trackInfo.mixes[channel_id].fx_tracks[0].volume = this.mixes[channel_id].fx_tracks[0].volume
+                                    }
+
+                                    if (trackInfo.mixes[channel_id].fx_tracks[1].volume != this.mixes[channel_id].fx_tracks[1].volume) {
+                                        this.setVolume(FX_2_TRACK_ID, channel_id, this.mixes[channel_id].fx_tracks[1].volume)
+                                        trackInfo.mixes[channel_id].fx_tracks[1].volume = this.mixes[channel_id].fx_tracks[1].volume
+                                    }
+                                }
+                            }
+
+                            this.mixes[channel_id] = {
+                                monitor: trackInfo.mixes[channel_id].master,
+                                fx_tracks: trackInfo.mixes[channel_id].fx_tracks,
+                                tracks: trackInfo.mixes[channel_id].tracks,
+                                persist: this.fadersJson[channel_id]?.persist ?? false
+                            }
+                        }
+
+                        this.invokeEvent("track_info", trackInfo)
+                    } else if (message.event === "change_volume") {
+                        const volumeChange = message as TCP_Volume_Change
+                        let consumerVolumeChange: Consumer_Volume_Change | null = null
+
+                        if (volumeChange.type === "master") {
+                            if (volumeChange.channel_id === null) {
+                                this.master.volume = volumeChange.volume
+                                volumeChange.channel_id = 0
+                            }
+                            this.mixes[volumeChange.channel_id].monitor.volume = volumeChange.volume
+
+                            consumerVolumeChange = {
+                                track_id: MASTER_TRACK_ID,
+                                channel_id: volumeChange.channel_id,
+                                volume: volumeChange.volume
+                            }
+                        } else if (volumeChange.type === "fx") {
+                            this.mixes[volumeChange.channel_id!].fx_tracks[volumeChange.track_id].volume = volumeChange.volume
+
+                            consumerVolumeChange = {
+                                track_id: volumeChange.track_id == 0 ? FX_1_TRACK_ID : FX_2_TRACK_ID,
+                                channel_id: volumeChange.channel_id!,
+                                volume: volumeChange.volume
+                            }
+                        } else if (volumeChange.type === "track") {
+                            this.mixes[volumeChange.channel_id!].tracks[volumeChange.track_id].volume = volumeChange.volume
+
+                            consumerVolumeChange = {
+                                track_id: volumeChange.track_id,
+                                channel_id: volumeChange.channel_id!,
+                                volume: volumeChange.volume
+                            }
+                        }
+
+                        if (consumerVolumeChange) {
+                            this.invokeEvent("change_volume", consumerVolumeChange)
+                        }
+                    } else if (message.event === "connection_status") {
+                        const connectionStatus = message as TCP_Connection_Status
+                        this.isConnected = connectionStatus.status === "connected";
+                        this.invokeEvent("connection_status", { isConnected: this.isConnected })
+                    }
+                } catch (error) {
+                    console.error("Error parsing message from L-20 controller:", error)
+                }
+            })
+
+            await new Promise((resolve) => {
+                this.client!.on('close', resolve)
+                this.client!.on('error', resolve)
+            })
+            
+            this.isConnected = false;
+            this.client.close();
+            this.client = null;
+            this.invokeEvent("connection_status", { isConnected: this.isConnected })
+        } catch (error) {
+            console.error("Error connecting to L-20:", error)
+        }
+    }
+
+    public async connectMixer(client: WebSocket) {
+        this.client?.close();
+
+        while (this.client !== null) {
+            await new Promise((resolve) => setTimeout(resolve, 30));
+        }
+
+        this.client = client;
+        this.connect();
     }
 
     private invokeEvent(event: Websocket_Events, parameters: Consumer_Parameter_Type) {
@@ -221,7 +211,7 @@ class L20_client {
 
     private sendMessage(message: string) {
         if (this.isConnected) {
-            this.client?.write(message + "\0");
+            this.client?.send(message);
         }
     }
 
