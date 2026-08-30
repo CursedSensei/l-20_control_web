@@ -233,6 +233,12 @@ export class L20_client {
 
     setVolume(trackId: number, channelId: number, volume: number) {
         if (this.isConnected) {
+
+            // Don't change volume on channels not shown to users
+            if (this.mixes[channelId] === undefined || this.fadersJson[channelId].shown === false) {
+                return;
+            }
+
             let track_id = trackId
 
             if (trackId === FX_1_TRACK_ID) {
