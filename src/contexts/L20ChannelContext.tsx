@@ -17,7 +17,7 @@ export function L20ChannelProvider({children}: Readonly<{children: React.ReactNo
 
     useEffect(() => {
         fetchFaders().then((fetchedFaders) => {
-            setAllChannels(fetchedFaders.filter((fader) => fader.shown))
+            setAllChannels(fetchedFaders)
 
             const storedChannelId = localStorage.getItem("channelId")
             if (storedChannelId && fetchedFaders.some((fader) => fader.id == parseInt(storedChannelId))) {
